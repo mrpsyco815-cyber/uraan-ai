@@ -1,4 +1,5 @@
 import { Link, Outlet } from 'react-router-dom'
+import { NotificationBell } from './NotificationBell'
 
 /** Shared application shell: header nav + footer. Phase 2 will flesh out pages. */
 export function Layout() {
@@ -21,6 +22,7 @@ export function Layout() {
             <Link to="/resources" className="text-ink hover:text-primary-teal">Resources</Link>
             <Link to="/faq" className="text-ink hover:text-primary-teal">FAQ</Link>
             <Link to="/contact" className="text-ink hover:text-primary-teal">Contact</Link>
+            <NotificationBell />
             <Link to="/login" className="text-primary-teal font-medium">
               Log in
             </Link>

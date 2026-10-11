@@ -17,6 +17,7 @@ import { Login } from './pages/Login'
 import { MentorDetail } from './pages/MentorDetail'
 import { Mentors } from './pages/Mentors'
 import { MyMentorship } from './pages/MyMentorship'
+import { Notifications } from './pages/Notifications'
 import { Privacy, Terms } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
 import { Onboarding } from './pages/Onboarding'
@@ -58,6 +59,7 @@ export default function App() {
                 <Route path="mentors/:id" element={<MentorDetail />} />
                 <Route path="become-mentor" element={<BecomeMentor />} />
                 <Route path="my-mentorship" element={<MyMentorship />} />
+                <Route path="notifications" element={<Notifications />} />
                 <Route path="onboarding" element={<Onboarding />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="admin/opportunities" element={<AdminGuard><ReviewQueue /></AdminGuard>} />
