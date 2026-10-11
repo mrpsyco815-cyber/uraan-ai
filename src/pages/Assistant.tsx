@@ -5,6 +5,7 @@ import { Card } from '../components/ui/Card'
 import { TextInput } from '../components/ui/fields'
 import { SectionHeading } from '../components/ui/states'
 import { sendMessage, type ChatMessage } from '../lib/assistant'
+import { checkRateLimit, LIMITS, rateLimitError } from '../lib/rateLimit'
 
 /** Minimal safe markdown: **bold** only. No HTML injection. */
 function renderRich(text: string): ReactNode[] {
@@ -44,6 +45,11 @@ export function Assistant() {
   async function send(text: string) {
     const trimmed = text.trim()
     if (!trimmed || sending) return
+    const rl = checkRateLimit('ai-assistant', LIMITS.ai.max, LIMITS.ai.windowMs)
+    if (!rl.allowed) {
+      setError(rateLimitError(rl.retryAfterMs))
+      return
+    }
     setError(null)
     const next = [...messages, { role: 'user' as const, content: trimmed }]
     setMessages(next)
@@ -128,6 +134,9 @@ export function Assistant() {
 
       <p className="text-xs text-muted mt-4 text-center">
         AI can be wrong — verify important details. It will never invent scholarships, deadlines, or official links.
+      </p>
+      <p className="text-[11px] text-muted mt-2 text-center max-w-xl mx-auto">
+        🔒 Privacy: your messages are sent to an AI service to generate responses. Don't share sensitive personal information like CNIC numbers, passwords, or bank details.
       </p>
     </div>
   )

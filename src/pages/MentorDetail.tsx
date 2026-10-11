@@ -7,6 +7,7 @@ import { TextArea } from '../components/ui/fields'
 import { EmptyState, Spinner } from '../components/ui/states'
 import { useAuth } from '../context/AuthContext'
 import { fetchMentor, requestMentorship, type Mentor } from '../lib/mentors'
+import { checkRateLimit, LIMITS, rateLimitError } from '../lib/rateLimit'
 
 export function MentorDetail() {
   const { id } = useParams()
@@ -26,6 +27,8 @@ export function MentorDetail() {
   async function send() {
     if (!user) return navigate('/login')
     if (!mentor || !message.trim()) return setError('Please write a short message.')
+    const rl = checkRateLimit(`mreq-${user.id}`, LIMITS.mentorshipRequest.max, LIMITS.mentorshipRequest.windowMs)
+    if (!rl.allowed) return setError(rateLimitError(rl.retryAfterMs))
     setSending(true)
     setError(null)
     try {

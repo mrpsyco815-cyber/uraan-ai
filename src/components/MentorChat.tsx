@@ -4,6 +4,7 @@ import { Card } from './ui/Card'
 import { TextInput } from './ui/fields'
 import { useAuth } from '../context/AuthContext'
 import { fetchMessages, markMessagesRead, sendChatMessage, subscribeToChat, type ChatMessage } from '../lib/chat'
+import { checkRateLimit, LIMITS, rateLimitError } from '../lib/rateLimit'
 
 /** Real-time chat for an accepted mentorship. */
 export function MentorChat({ requestId, otherName }: { requestId: string; otherName: string }) {
@@ -40,6 +41,11 @@ export function MentorChat({ requestId, otherName }: { requestId: string; otherN
 
   async function send() {
     if (!user || !input.trim() || sending) return
+    const rl = checkRateLimit(`chat-${user.id}`, LIMITS.chat.max, LIMITS.chat.windowMs)
+    if (!rl.allowed) {
+      setError(rateLimitError(rl.retryAfterMs))
+      return
+    }
     setSending(true)
     setError(null)
     try {

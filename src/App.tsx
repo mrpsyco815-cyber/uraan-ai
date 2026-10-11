@@ -22,6 +22,7 @@ import { MentorDetail } from './pages/MentorDetail'
 import { Mentors } from './pages/Mentors'
 import { MyMentorship } from './pages/MyMentorship'
 import { Notifications } from './pages/Notifications'
+import { NotificationSettings } from './pages/NotificationSettings'
 import { Privacy, Terms } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
 import { Onboarding } from './pages/Onboarding'
@@ -68,6 +69,7 @@ export default function App() {
                 <Route path="become-mentor" element={<BecomeMentor />} />
                 <Route path="my-mentorship" element={<MyMentorship />} />
                 <Route path="notifications" element={<Notifications />} />
+                <Route path="notification-settings" element={<NotificationSettings />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="matched" element={<MatchedOpportunities />} />
                 <Route path="sop-coach" element={<SOPCoach />} />

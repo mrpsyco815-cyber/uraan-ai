@@ -62,8 +62,14 @@ export function Notifications() {
     <div className="max-w-3xl mx-auto px-4 py-12">
       <SectionHeading kicker="Inbox" title="Notifications" subtitle={unread > 0 ? `${unread} unread` : 'All caught up 🎉'} />
       {unread > 0 && (
-        <div className="mb-6">
+        <div className="mb-6 flex gap-3">
           <Button size="sm" variant="outline" onClick={readAll}>Mark all read</Button>
+          <Link to="/notification-settings"><Button size="sm" variant="ghost">⚙️ Preferences</Button></Link>
+        </div>
+      )}
+      {unread === 0 && items.length > 0 && (
+        <div className="mb-6">
+          <Link to="/notification-settings"><Button size="sm" variant="ghost">⚙️ Notification preferences</Button></Link>
         </div>
       )}
       {items.length === 0 ? (

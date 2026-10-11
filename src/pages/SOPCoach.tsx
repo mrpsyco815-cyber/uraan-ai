@@ -71,6 +71,10 @@ export function SOPCoach() {
         </div>
       </Card>
 
+      <p className="text-[11px] text-muted mt-4 text-center max-w-xl mx-auto">
+        🔒 Privacy: your SOP text is sent to an AI service for analysis. Don't include sensitive personal information like CNIC numbers or bank details.
+      </p>
+
       {feedback && (
         <Card className="p-6">
           <div className="flex items-center gap-2 mb-4">
