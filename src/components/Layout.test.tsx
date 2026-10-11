@@ -1,13 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
+import { AuthProvider } from '../context/AuthContext'
 import { Layout } from './Layout'
 
 describe('Layout', () => {
   it('renders brand and navigation', () => {
     render(
       <MemoryRouter>
-        <Layout />
+        <AuthProvider>
+          <Layout />
+        </AuthProvider>
       </MemoryRouter>,
     )
     expect(screen.queryByText('Uraan AI')).not.toBeNull()
