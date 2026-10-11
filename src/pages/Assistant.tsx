@@ -1,10 +1,21 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { TextInput } from '../components/ui/fields'
 import { SectionHeading } from '../components/ui/states'
 import { isAssistantLive, sendMessage, type ChatMessage } from '../lib/assistant'
+
+/** Minimal safe markdown: **bold** only. No HTML injection. */
+function renderRich(text: string): ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith('**') && part.endsWith('**') ? (
+      <strong key={i}>{part.slice(2, -2)}</strong>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
+  )
+}
 
 const STARTERS = [
   'Help me plan my study week',
@@ -74,7 +85,7 @@ export function Assistant() {
                   m.role === 'user' ? 'bg-primary-teal text-white' : 'bg-white border border-line text-ink'
                 }`}
               >
-                {m.content}
+                {renderRich(m.content)}
               </div>
             </div>
           ))}
