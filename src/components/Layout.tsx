@@ -15,6 +15,7 @@ export function Layout() {
           <div className="hidden md:flex items-center gap-6 text-sm">
             <Link to="/" className="text-ink hover:text-primary-teal">Home</Link>
             <Link to="/opportunities" className="text-ink hover:text-primary-teal">Opportunities</Link>
+            <Link to="/assistant" className="text-ink hover:text-primary-teal">AI Assistant</Link>
             <Link to="/how-it-works" className="text-ink hover:text-primary-teal">How It Works</Link>
             <Link to="/resources" className="text-ink hover:text-primary-teal">Resources</Link>
             <Link to="/faq" className="text-ink hover:text-primary-teal">FAQ</Link>
