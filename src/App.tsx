@@ -18,6 +18,9 @@ import { OpportunityDetail } from './pages/OpportunityDetail'
 import { Profile } from './pages/Profile'
 import { Resources } from './pages/Resources'
 import { Signup } from './pages/Signup'
+import { AdminGuard } from './pages/admin/AdminGuard'
+import { OpportunityForm } from './pages/admin/OpportunityForm'
+import { ReviewQueue } from './pages/admin/ReviewQueue'
 
 export default function App() {
   return (
@@ -42,6 +45,9 @@ export default function App() {
                 <Route path="forgot-password" element={<ForgotPassword />} />
                 <Route path="onboarding" element={<Onboarding />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="admin/opportunities" element={<AdminGuard><ReviewQueue /></AdminGuard>} />
+                <Route path="admin/opportunities/new" element={<AdminGuard><OpportunityForm /></AdminGuard>} />
+                <Route path="admin/opportunities/:id/edit" element={<AdminGuard><OpportunityForm /></AdminGuard>} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
