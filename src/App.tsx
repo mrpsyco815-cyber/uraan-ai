@@ -4,6 +4,8 @@ import { Layout } from './components/Layout'
 import { AuthProvider } from './context/AuthContext'
 import { ProfileProvider } from './context/ProfileContext'
 import { About } from './pages/About'
+import { ApplicationDetail } from './pages/ApplicationDetail'
+import { Applications } from './pages/Applications'
 import { Contact } from './pages/Contact'
 import { Faq } from './pages/Faq'
 import { ForgotPassword } from './pages/ForgotPassword'
@@ -43,6 +45,8 @@ export default function App() {
                 <Route path="login" element={<Login />} />
                 <Route path="signup" element={<Signup />} />
                 <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="applications" element={<Applications />} />
+                <Route path="applications/:id" element={<ApplicationDetail />} />
                 <Route path="onboarding" element={<Onboarding />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="admin/opportunities" element={<AdminGuard><ReviewQueue /></AdminGuard>} />
