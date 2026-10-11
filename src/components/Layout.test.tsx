@@ -12,6 +12,6 @@ describe('Layout', () => {
     )
     expect(screen.queryByText('Uraan AI')).not.toBeNull()
     expect(screen.queryByText('Home')).not.toBeNull()
-    expect(screen.queryByText('Log in')).not.toBeNull()
+    expect(screen.queryAllByText('Log in').length).toBeGreaterThan(0)
   })
 })

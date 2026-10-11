@@ -12,13 +12,20 @@ export function Layout() {
             </span>
             Uraan AI
           </Link>
-          <div className="flex items-center gap-6 text-sm">
+          <div className="hidden md:flex items-center gap-6 text-sm">
             <Link to="/" className="text-ink hover:text-primary-teal">Home</Link>
-            <Link to="/about" className="text-ink hover:text-primary-teal">About</Link>
+            <Link to="/opportunities" className="text-ink hover:text-primary-teal">Opportunities</Link>
+            <Link to="/how-it-works" className="text-ink hover:text-primary-teal">How It Works</Link>
+            <Link to="/resources" className="text-ink hover:text-primary-teal">Resources</Link>
+            <Link to="/faq" className="text-ink hover:text-primary-teal">FAQ</Link>
+            <Link to="/contact" className="text-ink hover:text-primary-teal">Contact</Link>
             <Link to="/login" className="text-primary-teal font-medium">
               Log in
             </Link>
           </div>
+          <Link to="/login" className="md:hidden text-primary-teal font-medium text-sm">
+            Log in
+          </Link>
         </nav>
       </header>
       <main className="flex-1">
