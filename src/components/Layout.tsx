@@ -1,8 +1,11 @@
 import { Link, Outlet } from 'react-router-dom'
+import { LanguageSwitcher } from './LanguageSwitcher'
 import { NotificationBell } from './NotificationBell'
+import { useLang } from '../i18n/LanguageContext'
 
-/** Shared application shell: header nav + footer. Phase 2 will flesh out pages. */
+/** Shared application shell: header nav + footer. */
 export function Layout() {
+  const { t } = useLang()
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-white border-b border-soft-blue sticky top-0 z-10">
@@ -14,22 +17,26 @@ export function Layout() {
             Uraan AI
           </Link>
           <div className="hidden md:flex items-center gap-6 text-sm">
-            <Link to="/" className="text-ink hover:text-primary-teal">Home</Link>
-            <Link to="/opportunities" className="text-ink hover:text-primary-teal">Opportunities</Link>
-            <Link to="/assistant" className="text-ink hover:text-primary-teal">AI Assistant</Link>
-            <Link to="/mentors" className="text-ink hover:text-primary-teal">Mentors</Link>
-            <Link to="/how-it-works" className="text-ink hover:text-primary-teal">How It Works</Link>
-            <Link to="/resources" className="text-ink hover:text-primary-teal">Resources</Link>
-            <Link to="/faq" className="text-ink hover:text-primary-teal">FAQ</Link>
-            <Link to="/contact" className="text-ink hover:text-primary-teal">Contact</Link>
+            <Link to="/" className="text-ink hover:text-primary-teal">{t('nav.home')}</Link>
+            <Link to="/opportunities" className="text-ink hover:text-primary-teal">{t('nav.opportunities')}</Link>
+            <Link to="/assistant" className="text-ink hover:text-primary-teal">{t('nav.assistant')}</Link>
+            <Link to="/mentors" className="text-ink hover:text-primary-teal">{t('nav.mentors')}</Link>
+            <Link to="/how-it-works" className="text-ink hover:text-primary-teal">{t('nav.how')}</Link>
+            <Link to="/resources" className="text-ink hover:text-primary-teal">{t('nav.resources')}</Link>
+            <Link to="/faq" className="text-ink hover:text-primary-teal">{t('nav.faq')}</Link>
+            <Link to="/contact" className="text-ink hover:text-primary-teal">{t('nav.contact')}</Link>
+            <LanguageSwitcher />
             <NotificationBell />
             <Link to="/login" className="text-primary-teal font-medium">
-              Log in
+              {t('nav.login')}
             </Link>
           </div>
-          <Link to="/login" className="md:hidden text-primary-teal font-medium text-sm">
-            Log in
-          </Link>
+          <div className="md:hidden flex items-center gap-3">
+            <LanguageSwitcher />
+            <Link to="/login" className="text-primary-teal font-medium text-sm">
+              {t('nav.login')}
+            </Link>
+          </div>
         </nav>
       </header>
       <main className="flex-1">
@@ -37,8 +44,8 @@ export function Layout() {
       </main>
       <footer className="bg-deep-teal text-white/80 text-sm">
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row justify-between gap-4">
-          <p className="font-semibold text-white">Uraan AI — Learn | Grow | Succeed</p>
-          <p>© 2026 Uraan AI. Made for the students of Pakistan.</p>
+          <p className="font-semibold text-white">{t('footer.tagline')}</p>
+          <p>© 2026 Uraan AI. {t('footer.made')}</p>
         </div>
       </footer>
     </div>

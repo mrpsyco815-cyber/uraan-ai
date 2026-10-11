@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import { AuthProvider } from '../context/AuthContext'
+import { LanguageProvider } from '../i18n/LanguageContext'
 import { Layout } from './Layout'
 
 describe('Layout', () => {
@@ -9,7 +10,9 @@ describe('Layout', () => {
     render(
       <MemoryRouter>
         <AuthProvider>
-          <Layout />
+          <LanguageProvider>
+            <Layout />
+          </LanguageProvider>
         </AuthProvider>
       </MemoryRouter>,
     )

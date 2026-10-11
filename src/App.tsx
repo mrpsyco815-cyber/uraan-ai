@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { Layout } from './components/Layout'
 import { AuthProvider } from './context/AuthContext'
+import { LanguageProvider } from './i18n/LanguageContext'
 import { ProfileProvider } from './context/ProfileContext'
 import { About } from './pages/About'
 import { ApplicationDetail } from './pages/ApplicationDetail'
@@ -36,7 +37,8 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <ProfileProvider>
+        <LanguageProvider>
+          <ProfileProvider>
           <BrowserRouter>
             <Routes>
               <Route element={<Layout />}>
@@ -73,6 +75,7 @@ export default function App() {
             </Routes>
           </BrowserRouter>
         </ProfileProvider>
+      </LanguageProvider>
       </AuthProvider>
     </ErrorBoundary>
   )

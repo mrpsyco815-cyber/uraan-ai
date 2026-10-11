@@ -4,44 +4,63 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { SectionHeading } from '../components/ui/states'
 import { sampleOpportunities } from '../data/opportunities'
+import { useLang } from '../i18n/LanguageContext'
 
 export function Home() {
+  const { t } = useLang()
   const featured = sampleOpportunities.slice(0, 3)
+  const features = [
+    { t: t('home.features.d1t'), d: t('home.features.d1d') },
+    { t: t('home.features.d2t'), d: t('home.features.d2d') },
+    { t: t('home.features.d3t'), d: t('home.features.d3d') },
+    { t: t('home.features.d4t'), d: t('home.features.d4d') },
+  ]
   return (
     <>
       {/* Hero */}
       <section className="bg-gradient-to-br from-deep-teal via-primary-teal to-bright-teal text-white">
         <div className="max-w-6xl mx-auto px-4 py-20 sm:py-28 text-center">
           <Badge tone="info">
-            <span className="text-white">✈ Learn | Grow | Succeed</span>
+            <span className="text-white">✈ {t('home.kicker')}</span>
           </Badge>
           <h1 className="text-4xl sm:text-6xl font-bold mt-6 mb-4 leading-tight">
-            Your future shouldn't depend
-            <br className="hidden sm:block" /> on who you know.
+            {t('home.title')}
           </h1>
           <p className="text-white/85 text-lg mb-8 max-w-2xl mx-auto">
-            Uraan AI helps Pakistani students discover verified scholarships, get AI-powered
-            guidance, and connect with real mentors — from Lahore to Karachi to Peshawar.
+            {t('home.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/opportunities">
               <Button size="lg" className="bg-white !text-deep-teal hover:!bg-soft-blue w-full sm:w-auto">
-                Browse opportunities
+                {t('home.cta.browse')}
               </Button>
             </Link>
-            <Link to="/how-it-works">
+            <Link to="/signup">
               <Button size="lg" variant="outline" className="!border-white/60 !text-white hover:!bg-white/10 w-full sm:w-auto">
-                How it works
+                {t('home.cta.signup')}
               </Button>
             </Link>
           </div>
         </div>
       </section>
 
+      {/* Features */}
+      <section className="max-w-6xl mx-auto px-4 py-16">
+        <SectionHeading kicker={t('home.kicker')} title={t('home.features.title')} />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((f) => (
+            <Card key={f.t} className="p-6">
+              <h3 className="font-bold text-ink mb-2">{f.t}</h3>
+              <p className="text-muted text-sm">{f.d}</p>
+            </Card>
+          ))}
+        </div>
+      </section>
+
       {/* Featured opportunities */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <SectionHeading
-          kicker="Opportunities"
+          kicker={t('nav.opportunities')}
           title="Featured openings"
           subtitle="Sample records shown for design purposes — always verify on official program sites."
         />
@@ -65,7 +84,7 @@ export function Home() {
                   Deadline: <strong className="text-ink">{o.deadline}</strong>
                 </span>
                 <Link to={`/opportunities/${o.id}`}>
-                  <Button size="sm">View</Button>
+                  <Button size="sm">{t('common.view')}</Button>
                 </Link>
               </div>
             </Card>
@@ -73,39 +92,16 @@ export function Home() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="bg-white border-y border-soft-blue">
-        <div className="max-w-6xl mx-auto px-4 py-16">
-          <SectionHeading title="How it works" subtitle="From signup to submission in four simple steps." />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { n: '1', t: 'Build your profile', d: 'Tell us your education, goals and interests.' },
-              { n: '2', t: 'Get matched', d: 'AI matches you with opportunities you actually qualify for.' },
-              { n: '3', t: 'Prepare with AI coach', d: 'Essays, SOPs and interview prep, step by step.' },
-              { n: '4', t: 'Apply with mentors', d: 'Real humans review your application before you submit.' },
-            ].map((s) => (
-              <div key={s.n} className="text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary-teal text-white flex items-center justify-center font-bold text-lg">
-                  {s.n}
-                </div>
-                <h3 className="font-bold text-ink mb-1">{s.t}</h3>
-                <p className="text-muted text-sm">{s.d}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <Card className="bg-gradient-to-br from-deep-teal to-primary-teal !border-0 p-10 sm:p-14 text-center">
-          <h2 className="text-3xl font-bold text-white mb-3">Ready to take flight?</h2>
+          <h2 className="text-3xl font-bold text-white mb-3">{t('home.cta.signup')}</h2>
           <p className="text-white/85 mb-8 max-w-xl mx-auto">
-            Join Pakistani students building their future with Uraan AI. Free forever for students.
+            {t('home.subtitle')}
           </p>
-          <Link to="/login">
+          <Link to="/signup">
             <Button size="lg" className="bg-white !text-deep-teal hover:!bg-soft-blue">
-              Create free account
+              {t('home.cta.signup')}
             </Button>
           </Link>
         </Card>

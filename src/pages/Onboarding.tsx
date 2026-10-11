@@ -141,6 +141,19 @@ export function Onboarding() {
         {step === 3 && (
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-ink">Step 4: Review</h2>
+            <div>
+              <label htmlFor="ob-lang" className="block text-sm font-medium text-ink mb-1.5">Preferred language</label>
+              <select
+                id="ob-lang"
+                value={profile.preferred_language}
+                onChange={(e) => set('preferred_language', e.target.value as 'en' | 'ur' | 'roman')}
+                className="w-full border border-line rounded-lg px-3 py-2.5 bg-white text-ink focus:outline-none focus:ring-2 focus:ring-primary-teal"
+              >
+                <option value="en">English</option>
+                <option value="ur">اردو (Urdu)</option>
+                <option value="roman">Roman Urdu</option>
+              </select>
+            </div>
             <dl className="text-sm space-y-2">
               {[['Name', profile.full_name], ['Education', profile.education_level], ['Field', profile.field_of_study],
                 ['Interests', profile.interests.join(', ') || '—'], ['Countries', profile.preferred_countries.join(', ') || '—'],
