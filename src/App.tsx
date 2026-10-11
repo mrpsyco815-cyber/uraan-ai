@@ -7,13 +7,17 @@ import { About } from './pages/About'
 import { ApplicationDetail } from './pages/ApplicationDetail'
 import { Applications } from './pages/Applications'
 import { Assistant } from './pages/Assistant'
+import { BecomeMentor } from './pages/BecomeMentor'
 import { Contact } from './pages/Contact'
 import { Faq } from './pages/Faq'
 import { ForgotPassword } from './pages/ForgotPassword'
 import { Home } from './pages/Home'
 import { HowItWorks } from './pages/HowItWorks'
-import { Privacy, Terms } from './pages/Legal'
 import { Login } from './pages/Login'
+import { MentorDetail } from './pages/MentorDetail'
+import { Mentors } from './pages/Mentors'
+import { MyMentorship } from './pages/MyMentorship'
+import { Privacy, Terms } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
 import { Onboarding } from './pages/Onboarding'
 import { Opportunities } from './pages/Opportunities'
@@ -49,6 +53,10 @@ export default function App() {
                 <Route path="applications" element={<Applications />} />
                 <Route path="applications/:id" element={<ApplicationDetail />} />
                 <Route path="assistant" element={<Assistant />} />
+                <Route path="mentors" element={<Mentors />} />
+                <Route path="mentors/:id" element={<MentorDetail />} />
+                <Route path="become-mentor" element={<BecomeMentor />} />
+                <Route path="my-mentorship" element={<MyMentorship />} />
                 <Route path="onboarding" element={<Onboarding />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="admin/opportunities" element={<AdminGuard><ReviewQueue /></AdminGuard>} />
