@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { Layout } from './components/Layout'
@@ -28,10 +29,11 @@ import { Profile } from './pages/Profile'
 import { Resources } from './pages/Resources'
 import { Signup } from './pages/Signup'
 import { AdminGuard } from './pages/admin/AdminGuard'
-import { Analytics } from './pages/admin/Analytics'
-import { OpportunityForm } from './pages/admin/OpportunityForm'
-import { ResourceManager } from './pages/admin/ResourceManager'
-import { ReviewQueue } from './pages/admin/ReviewQueue'
+
+const Analytics = lazy(() => import('./pages/admin/Analytics').then((m) => ({ default: m.Analytics })))
+const OpportunityForm = lazy(() => import('./pages/admin/OpportunityForm').then((m) => ({ default: m.OpportunityForm })))
+const ResourceManager = lazy(() => import('./pages/admin/ResourceManager').then((m) => ({ default: m.ResourceManager })))
+const ReviewQueue = lazy(() => import('./pages/admin/ReviewQueue').then((m) => ({ default: m.ReviewQueue })))
 
 export default function App() {
   return (
@@ -65,11 +67,11 @@ export default function App() {
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="onboarding" element={<Onboarding />} />
                 <Route path="profile" element={<Profile />} />
-                <Route path="admin/opportunities" element={<AdminGuard><ReviewQueue /></AdminGuard>} />
-                <Route path="admin/analytics" element={<AdminGuard><Analytics /></AdminGuard>} />
-                <Route path="admin/opportunities/new" element={<AdminGuard><OpportunityForm /></AdminGuard>} />
-                <Route path="admin/opportunities/:id/edit" element={<AdminGuard><OpportunityForm /></AdminGuard>} />
-                <Route path="admin/resources" element={<AdminGuard><ResourceManager /></AdminGuard>} />
+                <Route path="admin/opportunities" element={<Suspense fallback={<div className="p-12 text-center text-muted">Loading…</div>}><AdminGuard><ReviewQueue /></AdminGuard></Suspense>} />
+                <Route path="admin/analytics" element={<Suspense fallback={<div className="p-12 text-center text-muted">Loading…</div>}><AdminGuard><Analytics /></AdminGuard></Suspense>} />
+                <Route path="admin/opportunities/new" element={<Suspense fallback={<div className="p-12 text-center text-muted">Loading…</div>}><AdminGuard><OpportunityForm /></AdminGuard></Suspense>} />
+                <Route path="admin/opportunities/:id/edit" element={<Suspense fallback={<div className="p-12 text-center text-muted">Loading…</div>}><AdminGuard><OpportunityForm /></AdminGuard></Suspense>} />
+                <Route path="admin/resources" element={<Suspense fallback={<div className="p-12 text-center text-muted">Loading…</div>}><AdminGuard><ResourceManager /></AdminGuard></Suspense>} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>

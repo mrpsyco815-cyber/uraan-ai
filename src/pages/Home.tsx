@@ -1,14 +1,24 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { SectionHeading } from '../components/ui/states'
 import { sampleOpportunities } from '../data/opportunities'
 import { useLang } from '../i18n/LanguageContext'
+import { fetchPublished } from '../lib/opportunities'
+import { fetchMentors } from '../lib/mentors'
 
 export function Home() {
   const { t } = useLang()
   const featured = sampleOpportunities.slice(0, 3)
+  const [stats, setStats] = useState({ opps: 0, mentors: 0 })
+
+  useEffect(() => {
+    Promise.all([fetchPublished(), fetchMentors()]).then(([{ data: o }, { data: m }]) => {
+      setStats({ opps: o.length, mentors: m.length })
+    }).catch(() => {})
+  }, [])
   const features = [
     { t: t('home.features.d1t'), d: t('home.features.d1d') },
     { t: t('home.features.d2t'), d: t('home.features.d2d') },
@@ -41,6 +51,24 @@ export function Home() {
               </Button>
             </Link>
           </div>
+
+          {/* Live stats */}
+          {(stats.opps > 0 || stats.mentors > 0) && (
+            <div className="flex justify-center gap-8 mt-12 text-white">
+              <div className="text-center">
+                <p className="text-3xl font-bold">{stats.opps}</p>
+                <p className="text-white/70 text-sm">{t('nav.opportunities')}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold">{stats.mentors}</p>
+                <p className="text-white/70 text-sm">{t('nav.mentors')}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold">100%</p>
+                <p className="text-white/70 text-sm">Free</p>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
