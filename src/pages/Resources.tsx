@@ -1,30 +1,78 @@
+import { useEffect, useState } from 'react'
+import { Badge } from '../components/ui/Badge'
 import { Card } from '../components/ui/Card'
-import { SectionHeading } from '../components/ui/states'
+import { Select, TextInput } from '../components/ui/fields'
+import { EmptyState, SectionHeading, Spinner } from '../components/ui/states'
+import { fetchResources, type Resource } from '../lib/resources'
 
-const resources = [
-  { t: 'English Learning Path', d: 'From basics to IELTS-ready, step by step.', tag: 'Language' },
-  { t: 'Programming Learning Path', d: 'Python, web development, and CS fundamentals.', tag: 'Skills' },
-  { t: 'Mathematics Resources', d: 'Concept videos, practice sets, and exam prep.', tag: 'Academics' },
-  { t: 'SOP Writing Guide', d: 'How to write a statement of purpose that stands out.', tag: 'Applications' },
-  { t: 'CV Builder Guide', d: 'Build a clean, honest academic CV.', tag: 'Career' },
-  { t: 'Interview Preparation', d: 'Common questions and how to answer them well.', tag: 'Career' },
-]
+const typeTone: Record<string, 'info' | 'verified' | 'pending' | 'neutral'> = {
+  guide: 'info', template: 'verified', video: 'pending', link: 'neutral',
+}
 
 export function Resources() {
+  const [items, setItems] = useState<Resource[]>([])
+  const [live, setLive] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('All')
+
+  useEffect(() => {
+    fetchResources().then(({ data, live: isLive }) => {
+      setItems(data)
+      setLive(isLive)
+      setLoading(false)
+    })
+  }, [])
+
+  const categories = ['All', ...Array.from(new Set(items.map((r) => r.category)))]
+  const filtered = items.filter(
+    (r) =>
+      (category === 'All' || r.category === category) &&
+      (r.title + r.description).toLowerCase().includes(query.toLowerCase()),
+  )
+
+  if (loading) return <Spinner />
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
-      <SectionHeading kicker="Library" title="Learning resources" subtitle="Free guides and learning paths. Full library arrives in Phase 9." />
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {resources.map((r) => (
-          <Card key={r.t} className="p-6">
-            <span className="inline-block text-xs font-semibold text-primary-teal bg-soft-blue px-2.5 py-0.5 rounded-full mb-3">
-              {r.tag}
-            </span>
-            <h3 className="font-bold text-ink mb-2">{r.t}</h3>
-            <p className="text-muted text-sm">{r.d}</p>
-          </Card>
-        ))}
-      </div>
+      <SectionHeading
+        kicker="Library"
+        title="Learning resources"
+        subtitle={live ? 'Curated guides, templates, and videos.' : 'Free guides and learning paths.'}
+      />
+
+      <Card className="p-5 mb-8 flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <TextInput id="rsearch" label="Search" placeholder="Search resources…" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
+        <div className="sm:w-56">
+          <Select id="rcat" label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
+            {categories.map((c) => <option key={c}>{c}</option>)}
+          </Select>
+        </div>
+      </Card>
+
+      {filtered.length === 0 ? (
+        <Card><EmptyState title="No resources found" message="Try a different search or category." /></Card>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filtered.map((r) => (
+            <Card key={r.id} className="p-6 flex flex-col">
+              <div className="flex items-center gap-2 mb-3">
+                <Badge tone={typeTone[r.type] ?? 'neutral'}>{r.type}</Badge>
+                <span className="text-xs text-muted">{r.category}</span>
+              </div>
+              <h3 className="font-bold text-ink mb-2">{r.title}</h3>
+              <p className="text-muted text-sm mb-4 flex-1">{r.description}</p>
+              {r.url && (
+                <a href={r.url} target="_blank" rel="noreferrer" className="text-primary-teal text-sm font-medium">
+                  Open resource ↗
+                </a>
+              )}
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
