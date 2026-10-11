@@ -85,7 +85,7 @@ export function MyMentorship() {
                 <div>
                   {openChat === r.id ? (
                     <>
-                      <MentorChat requestId={r.id} otherName="Student" />
+                      <MentorChat requestId={r.id} otherName="Student" otherUserId={r.student_id} />
                       <Button size="sm" variant="ghost" className="mt-2" onClick={() => setOpenChat(null)}>Close chat</Button>
                     </>
                   ) : (
@@ -123,7 +123,7 @@ export function MyMentorship() {
               <div>
                 {openChat === r.id ? (
                   <>
-                    <MentorChat requestId={r.id} otherName="Mentor" />
+                    <MentorChat requestId={r.id} otherName="Mentor" otherUserId={r.mentor_user_id} />
                     <Button size="sm" variant="ghost" className="mt-2" onClick={() => setOpenChat(null)}>Close chat</Button>
                   </>
                 ) : (

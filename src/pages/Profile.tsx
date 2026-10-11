@@ -6,6 +6,13 @@ import { Select, TextInput } from '../components/ui/fields'
 import { EmptyState, SectionHeading, Spinner } from '../components/ui/states'
 import { useAuth } from '../context/AuthContext'
 import { useProfile } from '../context/ProfileContext'
+import { updateVisibility, type Visibility } from '../lib/safety'
+
+const VISIBILITY_OPTIONS: { value: Visibility; label: string; desc: string }[] = [
+  { value: 'public', label: '🌐 Public', desc: 'Visible to everyone' },
+  { value: 'mentors_only', label: '👥 Mentors only', desc: 'Only verified mentors can see your profile' },
+  { value: 'private', label: '🔒 Private', desc: 'Hidden from directories; only you and admins' },
+]
 
 export function Profile() {
   const { user, signOut } = useAuth()
@@ -13,6 +20,8 @@ export function Profile() {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState('')
   const [saving, setSaving] = useState(false)
+  const [visibility, setVisibility] = useState<Visibility>('public')
+  const [visSaving, setVisSaving] = useState(false)
 
   if (loading) return <Spinner />
 
@@ -91,6 +100,49 @@ export function Profile() {
               <Button variant="ghost" onClick={() => signOut()}>
                 Log out
               </Button>
+            </div>
+
+            {/* Privacy controls — Phase B */}
+            <div className="mt-8 pt-6 border-t border-line">
+              <h3 className="font-semibold text-ink mb-1">🔒 Profile visibility</h3>
+              <p className="text-sm text-muted mb-4">Control who can discover your profile.</p>
+              <div className="space-y-2">
+                {VISIBILITY_OPTIONS.map((opt) => (
+                  <label key={opt.value} className="flex items-start gap-3 p-3 rounded-lg border border-line cursor-pointer hover:bg-surface-2">
+                    <input
+                      type="radio"
+                      name="visibility"
+                      checked={(profile as unknown as { visibility?: Visibility })?.visibility === opt.value || (visibility === opt.value && !(profile as unknown as { visibility?: Visibility })?.visibility)}
+                      onChange={async () => {
+                        setVisibility(opt.value)
+                        setVisSaving(true)
+                        try {
+                          await updateVisibility(user.id, opt.value)
+                        } catch {
+                          // offline: keep local
+                        }
+                        setVisSaving(false)
+                      }}
+                      className="w-4 h-4 mt-1 accent-primary"
+                    />
+                    <div>
+                      <p className="font-medium text-ink text-sm">{opt.label}</p>
+                      <p className="text-xs text-muted">{opt.desc}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+              {visSaving && <p className="text-xs text-muted mt-2">Saving…</p>}
+
+              <div className="mt-6">
+                <Link to="/notification-settings"><Button size="sm" variant="outline">⚙️ Notification preferences</Button></Link>
+              </div>
+
+              <div className="mt-6 p-4 rounded-lg border border-error/30 bg-error/5">
+                <h4 className="font-semibold text-error text-sm mb-1">Danger zone</h4>
+                <p className="text-xs text-muted mb-3">Deleting your account removes your profile, applications, messages, and all personal data. This cannot be undone.</p>
+                <Link to="/delete-account"><Button size="sm" variant="outline" className="!border-error !text-error">Delete my account</Button></Link>
+              </div>
             </div>
           </div>
         )}

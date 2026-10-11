@@ -12,6 +12,7 @@ import { Assistant } from './pages/Assistant'
 import { BecomeMentor } from './pages/BecomeMentor'
 import { Contact } from './pages/Contact'
 import { Dashboard } from './pages/Dashboard'
+import { DeleteAccount } from './pages/DeleteAccount'
 import { Faq } from './pages/Faq'
 import { ForgotPassword } from './pages/ForgotPassword'
 import { Home } from './pages/Home'
@@ -71,6 +72,7 @@ export default function App() {
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="notification-settings" element={<NotificationSettings />} />
                 <Route path="dashboard" element={<Dashboard />} />
+                <Route path="delete-account" element={<DeleteAccount />} />
                 <Route path="matched" element={<MatchedOpportunities />} />
                 <Route path="sop-coach" element={<SOPCoach />} />
                 <Route path="onboarding" element={<Onboarding />} />
