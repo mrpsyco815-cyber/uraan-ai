@@ -27,6 +27,7 @@ import { Profile } from './pages/Profile'
 import { Resources } from './pages/Resources'
 import { Signup } from './pages/Signup'
 import { AdminGuard } from './pages/admin/AdminGuard'
+import { Analytics } from './pages/admin/Analytics'
 import { OpportunityForm } from './pages/admin/OpportunityForm'
 import { ResourceManager } from './pages/admin/ResourceManager'
 import { ReviewQueue } from './pages/admin/ReviewQueue'
@@ -63,6 +64,7 @@ export default function App() {
                 <Route path="onboarding" element={<Onboarding />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="admin/opportunities" element={<AdminGuard><ReviewQueue /></AdminGuard>} />
+                <Route path="admin/analytics" element={<AdminGuard><Analytics /></AdminGuard>} />
                 <Route path="admin/opportunities/new" element={<AdminGuard><OpportunityForm /></AdminGuard>} />
                 <Route path="admin/opportunities/:id/edit" element={<AdminGuard><OpportunityForm /></AdminGuard>} />
                 <Route path="admin/resources" element={<AdminGuard><ResourceManager /></AdminGuard>} />
