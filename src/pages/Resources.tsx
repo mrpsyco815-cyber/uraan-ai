@@ -15,6 +15,7 @@ export function Resources() {
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('All')
+  const [type, setType] = useState('All')
 
   useEffect(() => {
     fetchResources().then(({ data, live: isLive }) => {
@@ -28,6 +29,7 @@ export function Resources() {
   const filtered = items.filter(
     (r) =>
       (category === 'All' || r.category === category) &&
+      (type === 'All' || r.type === type) &&
       (r.title + r.description).toLowerCase().includes(query.toLowerCase()),
   )
 
@@ -45,12 +47,23 @@ export function Resources() {
         <div className="flex-1">
           <TextInput id="rsearch" label="Search" placeholder="Search resources…" value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
-        <div className="sm:w-56">
+        <div className="sm:w-48">
           <Select id="rcat" label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
             {categories.map((c) => <option key={c}>{c}</option>)}
           </Select>
         </div>
+        <div className="sm:w-48">
+          <Select id="rtype" label="Type" value={type} onChange={(e) => setType(e.target.value)}>
+            <option>All</option>
+            <option value="guide">Guide</option>
+            <option value="template">Template</option>
+            <option value="video">Video</option>
+            <option value="link">Link</option>
+          </Select>
+        </div>
       </Card>
+
+      <p className="text-sm text-muted mb-4">{filtered.length} resource{filtered.length === 1 ? '' : 's'}</p>
 
       {filtered.length === 0 ? (
         <Card><EmptyState title="No resources found" message="Try a different search or category." /></Card>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
-import { TextInput } from '../components/ui/fields'
+import { Select, TextInput } from '../components/ui/fields'
 import { EmptyState, SectionHeading, Spinner } from '../components/ui/states'
 import { useAuth } from '../context/AuthContext'
 import { fetchMentors, matchScore, type Mentor } from '../lib/mentors'
@@ -15,6 +15,8 @@ export function Mentors() {
   const [live, setLive] = useState(false)
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
+  const [expertise, setExpertise] = useState('All')
+  const [availableOnly, setAvailableOnly] = useState(false)
   const [interests, setInterests] = useState<string[]>([])
 
   useEffect(() => {
@@ -33,8 +35,15 @@ export function Mentors() {
     })
   }, [user])
 
+  const allExpertise = ['All', ...Array.from(new Set(mentors.flatMap((m) => m.expertise))).sort()]
+
   const filtered = mentors
-    .filter((m) => (m.display_name + m.bio + m.expertise.join(' ')).toLowerCase().includes(query.toLowerCase()))
+    .filter((m) => {
+      if (expertise !== 'All' && !m.expertise.includes(expertise)) return false
+      if (availableOnly && !m.available) return false
+      if (query && !(m.display_name + m.bio + m.expertise.join(' ') + m.country).toLowerCase().includes(query.toLowerCase())) return false
+      return true
+    })
     .sort((a, b) => matchScore(b, interests) - matchScore(a, interests))
 
   if (loading) return <Spinner />
@@ -48,8 +57,21 @@ export function Mentors() {
       />
 
       <Card className="p-5 mb-8">
-        <TextInput id="msearch" label="Search mentors" placeholder="Name, country, or expertise…" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <TextInput id="msearch" label="Search mentors" placeholder="Name, country, or keyword…" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Select id="mexp" label="Expertise" value={expertise} onChange={(e) => setExpertise(e.target.value)}>
+            {allExpertise.map((x) => <option key={x}>{x}</option>)}
+          </Select>
+          <div className="flex items-end pb-1">
+            <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">
+              <input type="checkbox" checked={availableOnly} onChange={(e) => setAvailableOnly(e.target.checked)} className="w-4 h-4 accent-primary" />
+              Available now only
+            </label>
+          </div>
+        </div>
       </Card>
+
+      <p className="text-sm text-muted mb-4">{filtered.length} mentor{filtered.length === 1 ? '' : 's'}</p>
 
       {filtered.length === 0 ? (
         <Card><EmptyState title="No mentors found" message="Try a different search." /></Card>
