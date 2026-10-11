@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  /* Uraan AI brand tokens (from design system v1.0) */
+  --color-deep-teal: #063b46;
+  --color-primary-teal: #078b8c;
+  --color-bright-teal: #16b8ad;
+  --color-soft-blue: #eaf4ff;
+  --color-off-white: #f8fafc;
+  --color-ink: #142b3a;
+  --color-muted: #64748b;
+  --color-success: #16845b;
+  --color-warning: #e7a23b;
+  --color-error: #d94c4c;
+
+  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  @apply bg-off-white text-ink font-sans antialiased;
+}
