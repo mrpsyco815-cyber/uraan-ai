@@ -4,6 +4,7 @@ import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { EmptyState, ErrorState, SectionHeading, Spinner } from '../components/ui/states'
+import { MentorChat } from '../components/MentorChat'
 import { useAuth } from '../context/AuthContext'
 import { fetchMyRequests, setRequestStatus, type MentorshipRequest } from '../lib/mentors'
 
@@ -17,6 +18,7 @@ export function MyMentorship() {
   const [asMentor, setAsMentor] = useState<MentorshipRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [openChat, setOpenChat] = useState<string | null>(null)
 
   async function load() {
     if (!user) return
@@ -62,7 +64,8 @@ export function MyMentorship() {
           <h2 className="font-bold text-ink text-lg mb-4">Requests received ({asMentor.length})</h2>
           <div className="space-y-3">
             {asMentor.map((r) => (
-              <Card key={r.id} className="p-5">
+              <div key={r.id} className="space-y-3">
+              <Card className="p-5">
                 <div className="flex items-center justify-between mb-2">
                   <Badge tone={toneMap[r.status]}>{r.status}</Badge>
                   <span className="text-xs text-muted">{new Date(r.created_at).toLocaleDateString()}</span>
@@ -78,6 +81,19 @@ export function MyMentorship() {
                   <Button size="sm" variant="outline" onClick={() => act(r.id, 'completed')}>Mark completed</Button>
                 )}
               </Card>
+              {r.status === 'accepted' && (
+                <div>
+                  {openChat === r.id ? (
+                    <>
+                      <MentorChat requestId={r.id} otherName="Student" />
+                      <Button size="sm" variant="ghost" className="mt-2" onClick={() => setOpenChat(null)}>Close chat</Button>
+                    </>
+                  ) : (
+                    <Button size="sm" onClick={() => setOpenChat(r.id)}>💬 Open chat</Button>
+                  )}
+                </div>
+              )}
+              </div>
             ))}
           </div>
         </div>
@@ -95,13 +111,27 @@ export function MyMentorship() {
       ) : (
         <div className="space-y-3">
           {asStudent.map((r) => (
-            <Card key={r.id} className="p-5">
+            <div key={r.id} className="space-y-3">
+            <Card className="p-5">
               <div className="flex items-center justify-between mb-2">
                 <Badge tone={toneMap[r.status]}>{r.status}</Badge>
                 <span className="text-xs text-muted">{new Date(r.created_at).toLocaleDateString()}</span>
               </div>
               <p className="text-sm text-muted whitespace-pre-line">{r.message}</p>
             </Card>
+            {r.status === 'accepted' && (
+              <div>
+                {openChat === r.id ? (
+                  <>
+                    <MentorChat requestId={r.id} otherName="Mentor" />
+                    <Button size="sm" variant="ghost" className="mt-2" onClick={() => setOpenChat(null)}>Close chat</Button>
+                  </>
+                ) : (
+                  <Button size="sm" onClick={() => setOpenChat(r.id)}>💬 Chat with mentor</Button>
+                )}
+              </div>
+            )}
+            </div>
           ))}
         </div>
       )}

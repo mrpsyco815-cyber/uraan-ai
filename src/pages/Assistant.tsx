@@ -4,7 +4,7 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { TextInput } from '../components/ui/fields'
 import { SectionHeading } from '../components/ui/states'
-import { isAssistantLive, sendMessage, type ChatMessage } from '../lib/assistant'
+import { sendMessage, type ChatMessage } from '../lib/assistant'
 
 /** Minimal safe markdown: **bold** only. No HTML injection. */
 function renderRich(text: string): ReactNode[] {
@@ -63,18 +63,15 @@ export function Assistant() {
       <SectionHeading
         kicker="AI Helper"
         title="Study assistant"
-        subtitle={isAssistantLive ? 'Connected to the AI service.' : 'Demo mode — honest study guidance, no invented facts.'}
+        subtitle="Real AI — study help, SOP feedback, interview prep."
       />
 
-      {!isAssistantLive && (
-        <div className="mb-6">
-          <Badge tone="pending">Demo mode</Badge>
-          <p className="text-xs text-muted mt-2">
-            Connect an AI service (Edge Function + API key) to enable full conversational AI.
-            Demo mode gives safe, useful study guidance and never invents scholarships or deadlines.
-          </p>
-        </div>
-      )}
+      <div className="mb-6 flex items-center gap-2">
+        <Badge tone="verified">● Live AI</Badge>
+        <p className="text-xs text-muted">
+          Powered by real AI — ask anything about studying, SOPs, or interviews.
+        </p>
+      </div>
 
       <Card className="p-0 overflow-hidden">
         <div className="h-[480px] overflow-y-auto p-6 space-y-4 bg-surface-2">

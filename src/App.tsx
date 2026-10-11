@@ -11,11 +11,13 @@ import { Applications } from './pages/Applications'
 import { Assistant } from './pages/Assistant'
 import { BecomeMentor } from './pages/BecomeMentor'
 import { Contact } from './pages/Contact'
+import { Dashboard } from './pages/Dashboard'
 import { Faq } from './pages/Faq'
 import { ForgotPassword } from './pages/ForgotPassword'
 import { Home } from './pages/Home'
 import { HowItWorks } from './pages/HowItWorks'
 import { Login } from './pages/Login'
+import { MatchedOpportunities } from './pages/MatchedOpportunities'
 import { MentorDetail } from './pages/MentorDetail'
 import { Mentors } from './pages/Mentors'
 import { MyMentorship } from './pages/MyMentorship'
@@ -28,6 +30,7 @@ import { OpportunityDetail } from './pages/OpportunityDetail'
 import { Profile } from './pages/Profile'
 import { Resources } from './pages/Resources'
 import { Signup } from './pages/Signup'
+import { SOPCoach } from './pages/SOPCoach'
 import { AdminGuard } from './pages/admin/AdminGuard'
 
 const Analytics = lazy(() => import('./pages/admin/Analytics').then((m) => ({ default: m.Analytics })))
@@ -65,6 +68,9 @@ export default function App() {
                 <Route path="become-mentor" element={<BecomeMentor />} />
                 <Route path="my-mentorship" element={<MyMentorship />} />
                 <Route path="notifications" element={<Notifications />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="matched" element={<MatchedOpportunities />} />
+                <Route path="sop-coach" element={<SOPCoach />} />
                 <Route path="onboarding" element={<Onboarding />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="admin/opportunities" element={<Suspense fallback={<div className="p-12 text-center text-muted">Loading…</div>}><AdminGuard><ReviewQueue /></AdminGuard></Suspense>} />
