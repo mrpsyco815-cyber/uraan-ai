@@ -12,7 +12,16 @@ import { Assistant } from './pages/Assistant'
 import { BecomeMentor } from './pages/BecomeMentor'
 import { Contact } from './pages/Contact'
 import { CVBuilder } from './pages/apps/CVBuilder'
+import { CodePlayground } from './pages/apps/CodePlayground'
 import { Dashboard } from './pages/Dashboard'
+import { EnglishCoach } from './pages/apps/EnglishCoach'
+import { Flashcards } from './pages/apps/Flashcards'
+import { InterviewLab } from './pages/apps/InterviewLab'
+import { NotesStudio } from './pages/apps/NotesStudio'
+import { ProgressDashboard } from './pages/apps/ProgressDashboard'
+import { ScholarshipTracker } from './pages/apps/ScholarshipTracker'
+import { StudyPlanner } from './pages/apps/StudyPlanner'
+import { TestArena } from './pages/apps/TestArena'
 import { DeleteAccount } from './pages/DeleteAccount'
 import { Faq } from './pages/Faq'
 import { ForgotPassword } from './pages/ForgotPassword'
@@ -25,7 +34,6 @@ import { Mentors } from './pages/Mentors'
 import { MyMentorship } from './pages/MyMentorship'
 import { Notifications } from './pages/Notifications'
 import { NotificationSettings } from './pages/NotificationSettings'
-import { NotesStudio } from './pages/apps/NotesStudio'
 import { Privacy, Terms } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
 import { Onboarding } from './pages/Onboarding'
@@ -59,6 +67,14 @@ export default function App() {
                 <Route path="resources" element={<Resources />} />
                 <Route path="apps/cv-builder" element={<CVBuilder />} />
                 <Route path="apps/notes" element={<NotesStudio />} />
+                <Route path="apps/test-arena" element={<TestArena />} />
+                <Route path="apps/interview-lab" element={<InterviewLab />} />
+                <Route path="apps/study-planner" element={<StudyPlanner />} />
+                <Route path="apps/flashcards" element={<Flashcards />} />
+                <Route path="apps/code-playground" element={<CodePlayground />} />
+                <Route path="apps/scholarship-tracker" element={<ScholarshipTracker />} />
+                <Route path="apps/english-coach" element={<EnglishCoach />} />
+                <Route path="apps/progress" element={<ProgressDashboard />} />
                 <Route path="faq" element={<Faq />} />
                 <Route path="contact" element={<Contact />} />
                 <Route path="privacy" element={<Privacy />} />
