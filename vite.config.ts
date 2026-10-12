@@ -6,7 +6,8 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/uraan-ai/',
+  // Vercel serves from root (/), GitHub Pages from /uraan-ai/
+  base: process.env.VITE_BASE_PATH ?? '/',
   test: {
     environment: 'jsdom',
     globals: true,
