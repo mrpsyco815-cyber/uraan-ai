@@ -4,7 +4,7 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { TextInput } from '../components/ui/fields'
 import { SectionHeading } from '../components/ui/states'
-import { sendMessage, type ChatMessage } from '../lib/assistant'
+import { getCapabilityLabel, sendMessage, type ChatMessage } from '../lib/assistant'
 import { checkRateLimit, LIMITS, rateLimitError } from '../lib/rateLimit'
 
 /** Minimal safe markdown: **bold** only. No HTML injection. */
@@ -72,10 +72,13 @@ export function Assistant() {
         subtitle="Real AI — study help, SOP feedback, interview prep."
       />
 
-      <div className="mb-6 flex items-center gap-2">
+      <div className="mb-6 flex items-center gap-2 flex-wrap">
         <Badge tone="verified">● Live AI</Badge>
-        <p className="text-xs text-muted">
-          Powered by real AI — ask anything about studying, SOPs, or interviews.
+        {messages.length > 1 && (
+          <Badge tone="info">{getCapabilityLabel(messages[messages.length - 2]?.content ?? '')}</Badge>
+        )}
+        <p className="text-xs text-muted w-full">
+          Tutoring · Coding · Careers · Scholarships · Writing · Research — ask anything.
         </p>
       </div>
 
