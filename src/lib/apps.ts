@@ -116,6 +116,36 @@ export const MINI_APPS: MiniApp[] = [
     status: 'live',
     category: 'Productivity',
   },
+  {
+    id: 'gpa-calculator',
+    name: 'GPA Calculator',
+    icon: '🎓',
+    tagline: 'Semester GPA + CGPA',
+    description: 'Track every semester, calculate CGPA, and use the what-if calculator to plan your focus.',
+    route: '/apps/gpa',
+    status: 'live',
+    category: 'Academics',
+  },
+  {
+    id: 'presentation-studio',
+    name: 'Presentation Studio',
+    icon: '🎨',
+    tagline: 'Stunning slides',
+    description: 'Create presentations with 6 beautiful themes, live preview, and fullscreen present mode.',
+    route: '/apps/presentations',
+    status: 'live',
+    category: 'Skills',
+  },
+  {
+    id: 'habit-tracker',
+    name: 'Habit Tracker',
+    icon: '🔥',
+    tagline: 'Build streaks',
+    description: 'Daily habits with streak counters and a 7-day visual tracker. Small steps, big results.',
+    route: '/apps/habits',
+    status: 'live',
+    category: 'Productivity',
+  },
 ]
 
 export function getApp(id: string): MiniApp | undefined {

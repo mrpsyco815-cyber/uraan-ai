@@ -16,7 +16,10 @@ import { CodePlayground } from './pages/apps/CodePlayground'
 import { Dashboard } from './pages/Dashboard'
 import { EnglishCoach } from './pages/apps/EnglishCoach'
 import { Flashcards } from './pages/apps/Flashcards'
+import { GPACalculator } from './pages/apps/GPACalculator'
+import { HabitTracker } from './pages/apps/HabitTracker'
 import { InterviewLab } from './pages/apps/InterviewLab'
+import { PresentationStudio } from './pages/apps/PresentationStudio'
 import { NotesStudio } from './pages/apps/NotesStudio'
 import { ProgressDashboard } from './pages/apps/ProgressDashboard'
 import { ScholarshipTracker } from './pages/apps/ScholarshipTracker'
@@ -75,6 +78,9 @@ export default function App() {
                 <Route path="apps/scholarship-tracker" element={<ScholarshipTracker />} />
                 <Route path="apps/english-coach" element={<EnglishCoach />} />
                 <Route path="apps/progress" element={<ProgressDashboard />} />
+                <Route path="apps/gpa" element={<GPACalculator />} />
+                <Route path="apps/presentations" element={<PresentationStudio />} />
+                <Route path="apps/habits" element={<HabitTracker />} />
                 <Route path="faq" element={<Faq />} />
                 <Route path="contact" element={<Contact />} />
                 <Route path="privacy" element={<Privacy />} />
