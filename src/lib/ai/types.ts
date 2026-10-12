@@ -36,6 +36,17 @@ export interface AssistantResult {
   engine: 'webllm' | 'local'
   /** tools that actually ran */
   toolsUsed: string[]
+  /** generated downloadable file, if any */
+  file?: GeneratedFileMeta
+}
+
+/** Serialisable file reference (blob lives in a registry). */
+export interface GeneratedFileMeta {
+  id: string
+  kind: string
+  filename: string
+  mime: string
+  sizeBytes: string
 }
 
 export interface StreamCallbacks {
@@ -54,8 +65,17 @@ export interface AttachedDoc {
   truncated: boolean
 }
 
+export interface AttachedImage {
+  name: string
+  /** base64 data URL for the vision model */
+  dataUrl: string
+  /** object URL for display */
+  displayUrl: string
+}
+
 export interface EngineContext {
   history: ChatMsg[]
   docs: AttachedDoc[]
+  images: AttachedImage[]
   signal: { cancelled: boolean }
 }

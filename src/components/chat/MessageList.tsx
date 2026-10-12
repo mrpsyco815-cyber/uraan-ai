@@ -4,8 +4,9 @@
  * streaming caret, copy/retry actions.
  */
 import { useState } from 'react'
-import type { Citation, ToolEvent } from '../../lib/ai/types'
+import type { Citation, GeneratedFileMeta, ToolEvent } from '../../lib/ai/types'
 import { Markdown } from './Markdown'
+import { FileCard } from './FileCard'
 
 export interface UIMessage {
   id: string
@@ -13,6 +14,7 @@ export interface UIMessage {
   content: string
   citations: Citation[]
   streaming?: boolean
+  file?: GeneratedFileMeta
 }
 
 interface Props {
@@ -110,6 +112,7 @@ export function MessageList(p: Props) {
             >
               <Markdown text={m.content || ' '} />
               <Citations citations={m.citations} />
+              {m.file && <FileCard file={m.file} />}
             </div>
             {!m.streaming && m.content && (
               <div className="flex items-center gap-1 mt-1.5 ml-1">

@@ -312,6 +312,41 @@ export function wantsSearch(q: string): boolean {
     && /(scholarship|university|admission|deadline|program|college|degree|visa|test|exam)/.test(t)
 }
 
+/** Detect quiz/MCQ generation requests. */
+export function detectQuizRequest(q: string): string | null {
+  const t = q.toLowerCase()
+  if (/\b(mcq|quiz|practice questions|test me|questions banao)\b/.test(t)) {
+    // Extract topic: "photosynthesis par MCQs banao" → "photosynthesis"
+    const m = q.match(/(?:par|on|about|ke|ki)\s+(.+?)\s+(?:par|pe|ke|ki)?\s*(?:mcq|quiz|questions)/i)
+      ?? q.match(/(.+?)\s+(?:ke|ki|par)\s+(?:mcq|quiz)/i)
+    const topic = (m?.[1] ?? '').replace(/^\s*(mujhe|mere liye|please)\s+/i, '').trim()
+    return topic.length > 2 ? topic.slice(0, 60) : 'general knowledge'
+  }
+  return null
+}
+
+/** Generate practice MCQs locally (template-based, honest about limits). */
+export function generateQuiz(topic: string, count = 5): string {
+  const cap = topic.charAt(0).toUpperCase() + topic.slice(1)
+  let out = `## 📝 ${cap} — Practice Quiz (${count} MCQs)\n\n`
+  out += `*Neeche sample questions hain. Apne notes se verify karo — aur **Smart Mode** on kar ke topic-specific quiz banao!*\n\n`
+  const templates: [string, string[]][] = [
+    [`${cap} ka sab se important concept kaunsa hai?`, ['Pehla core idea', 'Doosra core idea', 'Teesra core idea', 'In mein se koi nahi']],
+    [`${cap} ko samajhne ke liye sab se pehle kya parhna chahiye?`, ['Basics aur definitions', 'Advanced theories', 'Sirf formulas', 'Kuch nahi']],
+    [`${cap} ka practical use kahan hota hai?`, ['Real-world application', 'Sirf theory mein', 'Kahin nahi', 'Sab jagah ghalat']],
+    [`${cap} mein common mistake kya hai?`, ['Concepts confuse karna', 'Sab sahi samajhna', 'Practice na karna', 'Pehla aur teesra']],
+    [`${cap} ka exam mein kis tarah sawal aata hai?`, ['Concept + application', 'Sirf ratta', 'Koi sawal nahi', 'Sirf diagram']],
+  ]
+  for (let i = 0; i < Math.min(count, templates.length); i++) {
+    const [qs, opts] = templates[i]
+    out += `**Q${i + 1}.** ${qs}\n`
+    opts.forEach((o, j) => { out += `  ${'ABCD'[j]}) ${o}\n` })
+    out += `\n<details><summary>Jawab dekho</summary>A) — apne notes se confirm karo!</details>\n\n`
+  }
+  out += `---\n💡 **Behtar quiz chahiye?** Topic ka PDF/text upload karo, phir "is document se MCQs banao" likho — main actual content se questions banaunga!`
+  return out
+}
+
 /** Strip the "search:" prefix if present */
 export function searchQueryOf(q: string): string {
   return q.trim().replace(/^search:\s*/i, '')

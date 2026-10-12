@@ -7,9 +7,9 @@ import { Sidebar } from '../components/chat/Sidebar'
 import { Composer } from '../components/chat/Composer'
 import { MessageList, type UIMessage } from '../components/chat/MessageList'
 import { WelcomeScreen } from '../components/chat/WelcomeScreen'
-import type { AttachedDoc, ChatMsg, Citation, ToolEvent } from '../lib/ai/types'
+import type { AttachedDoc, AttachedImage, ChatMsg, Citation, ToolEvent } from '../lib/ai/types'
 import { runAssistant } from '../lib/ai/engine'
-import { isSmartReady, loadSmartMode, smartLoadError } from '../lib/ai/webllm'
+import { isSmartReady, isVisionReady, loadSmartMode, loadVisionMode, smartLoadError, visionLoadErrorMsg } from '../lib/ai/webllm'
 import {
   autoTitle, createConversation, deleteConversation, listConversations,
   loadMessages, renameConversation, saveMessage, type Conversation,
@@ -39,6 +39,9 @@ export function Assistant() {
   const [smartReady, setSmartReady] = useState(isSmartReady())
   const [smartLoading, setSmartLoading] = useState(false)
   const [smartProgress, setSmartProgress] = useState(0)
+  const [visionReady, setVisionReady] = useState(isVisionReady())
+  const [visionLoading, setVisionLoading] = useState(false)
+  const [visionProgress, setVisionProgress] = useState(0)
   const [userName, setUserName] = useState<string>()
 
   const signalRef = useRef({ cancelled: false })
@@ -112,9 +115,24 @@ export function Assistant() {
     setSmartLoading(false)
   }, [smartLoading])
 
-  const send = useCallback(async (text: string, docs: AttachedDoc[]) => {
+  const toggleVision = useCallback(async () => {
+    if (isVisionReady()) return
+    if (visionLoading) return
+    setVisionLoading(true)
+    setVisionProgress(0)
+    setError(null)
+    try {
+      await loadVisionMode((p) => setVisionProgress(p.progress))
+      setVisionReady(true)
+    } catch {
+      setError(visionLoadErrorMsg() ?? 'Vision Mode load nahi hua. WiFi par dobara try karo (~4GB download).')
+    }
+    setVisionLoading(false)
+  }, [visionLoading])
+
+  const send = useCallback(async (text: string, docs: AttachedDoc[], images: AttachedImage[] = []) => {
     const trimmed = text.trim()
-    if ((!trimmed && docs.length === 0) || sending) return
+    if ((!trimmed && docs.length === 0 && images.length === 0) || sending) return
 
     const rl = checkRateLimit('ai-assistant', LIMITS.ai.max, LIMITS.ai.windowMs)
     if (!rl.allowed) { setError(rateLimitError(rl.retryAfterMs)); return }
@@ -132,13 +150,15 @@ export function Assistant() {
 
     const userMsg: UIMessage = {
       id: `u-${Date.now()}`, role: 'user',
-      content: trimmed + (docs.length > 0 ? `\n\n📎 ${docs.map((d) => d.name).join(', ')}` : ''),
+      content: trimmed
+        + (docs.length > 0 ? `\n\n📎 ${docs.map((d) => d.name).join(', ')}` : '')
+        + (images.length > 0 ? `\n\n🖼️ ${images.map((d) => d.name).join(', ')}` : ''),
       citations: [],
     }
     // History for the engine (without attachment markers)
     const history: ChatMsg[] = [
       ...messages.filter((m) => !m.streaming).map((m) => ({ role: m.role, content: m.content })),
-      { role: 'user' as const, content: trimmed || `(document attached: ${docs.map((d) => d.name).join(', ')})` },
+      { role: 'user' as const, content: trimmed || `(attachments: ${[...docs.map((d) => d.name), ...images.map((d) => d.name)].join(', ')})` },
     ]
 
     const assistantMsg: UIMessage = {
@@ -157,7 +177,7 @@ export function Assistant() {
 
     try {
       await runAssistant(
-        { history, docs, signal: signalRef.current },
+        { history, docs, images, signal: signalRef.current },
         {
           onToken: (t) => {
             acc += t
@@ -168,7 +188,7 @@ export function Assistant() {
             finalCitations = result.citations
             setMessages((prev) => prev.map((m) =>
               m.id === assistantMsg.id
-                ? { ...m, content: result.text, citations: result.citations, streaming: false }
+                ? { ...m, content: result.text, citations: result.citations, streaming: false, file: result.file }
                 : m,
             ))
             saveMessage(convId!, 'assistant', result.text, result.citations)
@@ -317,6 +337,10 @@ export function Assistant() {
               smartLoading={smartLoading}
               smartProgress={smartProgress}
               onToggleSmart={toggleSmart}
+              visionReady={visionReady}
+              visionLoading={visionLoading}
+              visionProgress={visionProgress}
+              onToggleVision={toggleVision}
             />
           </div>
         </footer>

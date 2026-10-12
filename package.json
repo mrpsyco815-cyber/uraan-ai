@@ -12,10 +12,15 @@
   "dependencies": {
     "@mlc-ai/web-llm": "^0.2.86",
     "@supabase/supabase-js": "^2.117.3",
+    "docx": "^9.10.0",
+    "jspdf": "^4.2.1",
     "pdfjs-dist": "^6.4.299",
+    "pptxgenjs": "^4.0.1",
+    "pyodide": "^314.0.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.4"
+    "react-router-dom": "^7.18.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

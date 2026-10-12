@@ -3,27 +3,33 @@
  * Enter-to-send, Shift+Enter newline, smart-mode toggle, doc chips.
  */
 import { useEffect, useRef, useState } from 'react'
-import type { AttachedDoc } from '../../lib/ai/types'
+import type { AttachedDoc, AttachedImage } from '../../lib/ai/types'
 import { extractDocument } from '../../lib/ai/documents'
 
 interface Props {
-  onSend: (text: string, docs: AttachedDoc[]) => void
+  onSend: (text: string, docs: AttachedDoc[], images: AttachedImage[]) => void
   onStop: () => void
   sending: boolean
   smartReady: boolean
   smartLoading: boolean
   smartProgress: number
   onToggleSmart: () => void
+  visionReady: boolean
+  visionLoading: boolean
+  visionProgress: number
+  onToggleVision: () => void
   disabled?: boolean
 }
 
 export function Composer(p: Props) {
   const [text, setText] = useState('')
   const [docs, setDocs] = useState<AttachedDoc[]>([])
+  const [images, setImages] = useState<AttachedImage[]>([])
   const [docError, setDocError] = useState<string | null>(null)
   const [parsing, setParsing] = useState(false)
   const taRef = useRef<HTMLTextAreaElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const imgRef = useRef<HTMLInputElement>(null)
 
   // Auto-grow
   useEffect(() => {
@@ -55,12 +61,39 @@ export function Composer(p: Props) {
     if (fileRef.current) fileRef.current.value = ''
   }
 
+  async function handleImages(files: FileList | null) {
+    if (!files || files.length === 0) return
+    setDocError(null)
+    try {
+      const next: AttachedImage[] = []
+      for (const f of Array.from(files).slice(0, 2)) {
+        if (!f.type.startsWith('image/')) continue
+        if (f.size > 8 * 1024 * 1024) {
+          setDocError(`"${f.name}" bohat bari hai (max 8MB).`)
+          continue
+        }
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const r = new FileReader()
+          r.onload = () => resolve(r.result as string)
+          r.onerror = reject
+          r.readAsDataURL(f)
+        })
+        next.push({ name: f.name, dataUrl, displayUrl: URL.createObjectURL(f) })
+      }
+      setImages((imgs) => [...imgs, ...next].slice(0, 2))
+    } catch {
+      setDocError('Image parhne mein masla hua.')
+    }
+    if (imgRef.current) imgRef.current.value = ''
+  }
+
   function send() {
     const t = text.trim()
-    if ((!t && docs.length === 0) || p.sending || p.disabled) return
-    p.onSend(t, docs)
+    if ((!t && docs.length === 0 && images.length === 0) || p.sending || p.disabled) return
+    p.onSend(t, docs, images)
     setText('')
     setDocs([])
+    setImages([])
     setDocError(null)
   }
 
@@ -83,8 +116,23 @@ export function Composer(p: Props) {
         </div>
       )}
 
-      {/* Smart mode toggle */}
-      <div className="flex items-center gap-2 mb-2">
+      {/* Image chips */}
+      {images.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-2">
+          {images.map((img, i) => (
+            <span key={i} className="inline-flex items-center gap-2 text-xs pl-1.5 pr-2 py-1.5 rounded-xl border" style={{ borderColor: 'var(--chat-border)', background: 'var(--chat-bg-soft)' }}>
+              <img src={img.displayUrl} alt={img.name} className="w-10 h-10 rounded-lg object-cover" />
+              <span className="max-w-32 truncate" style={{ color: 'var(--chat-text)' }}>{img.name}</span>
+              <button type="button" aria-label={`Remove ${img.name}`} onClick={() => setImages(images.filter((_, j) => j !== i))} className="p-0.5 rounded-full" style={{ color: 'var(--chat-text-3)' }}>
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Smart + Vision mode toggles */}
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
         <button
           type="button" onClick={p.onToggleSmart} aria-pressed={p.smartReady}
           className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full border transition"
@@ -97,9 +145,24 @@ export function Composer(p: Props) {
         </button>
         {p.smartLoading && (
           <span className="text-xs" style={{ color: 'var(--chat-text-2)' }} aria-live="polite">
-            Model download ho raha hai… {Math.round(p.smartProgress * 100)}%
+            Model download… {Math.round(p.smartProgress * 100)}%
+          </span>
+        )}
+        <button
+          type="button" onClick={p.onToggleVision} aria-pressed={p.visionReady}
+          className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full border transition"
+          style={p.visionReady
+            ? { borderColor: 'var(--chat-accent)', background: 'var(--chat-accent-soft)', color: 'var(--chat-accent-ink)', fontWeight: 600 }
+            : { borderColor: 'var(--chat-border)', color: 'var(--chat-text-2)' }}
+          title="Image samajhne wala AI (~4GB download once, WiFi recommended)."
+        >
+          👁️ Vision {p.visionReady ? 'on' : 'off'}
+        </button>
+        {p.visionLoading && (
+          <span className="text-xs" style={{ color: 'var(--chat-text-2)' }} aria-live="polite">
+            Vision model download… {Math.round(p.visionProgress * 100)}%
             <span className="inline-block ml-2 w-24 h-1.5 rounded-full align-middle" style={{ background: 'var(--chat-bg-sunken)' }}>
-              <span className="block h-full rounded-full transition-all" style={{ width: `${p.smartProgress * 100}%`, background: 'var(--chat-accent)' }} />
+              <span className="block h-full rounded-full transition-all" style={{ width: `${p.visionProgress * 100}%`, background: 'var(--chat-accent)' }} />
             </span>
           </span>
         )}
@@ -115,6 +178,11 @@ export function Composer(p: Props) {
           className="hidden" aria-label="Attach PDF or text file"
           onChange={(e) => handleFiles(e.target.files)}
         />
+        <input
+          ref={imgRef} type="file" accept="image/*" multiple
+          className="hidden" aria-label="Attach image"
+          onChange={(e) => handleImages(e.target.files)}
+        />
         <button
           type="button" onClick={() => fileRef.current?.click()} aria-label="Attach document (PDF or text)"
           className="p-2.5 rounded-xl shrink-0 transition min-w-11 min-h-11"
@@ -123,6 +191,15 @@ export function Composer(p: Props) {
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
         >
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M10 13V3m0 0L6 7m4-4l4 4" /><path d="M4 13v3a1 1 0 001 1h10a1 1 0 001-1v-3" /></svg>
+        </button>
+        <button
+          type="button" onClick={() => imgRef.current?.click()} aria-label="Attach image"
+          className="p-2.5 rounded-xl shrink-0 transition min-w-11 min-h-11"
+          style={{ color: 'var(--chat-text-2)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--chat-bg-sunken)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+        >
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="3" y="5" width="14" height="12" rx="2" /><circle cx="8.5" cy="10" r="1.5" /><path d="M3 15l4-4 3 3 3-3 4 4" /></svg>
         </button>
         <textarea
           ref={taRef}
