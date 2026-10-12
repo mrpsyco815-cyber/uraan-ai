@@ -61,6 +61,8 @@ export default function App() {
           <ProfileProvider>
           <HashRouter>
             <Routes>
+              {/* Full-screen chat experience (no site header/footer) */}
+              <Route path="assistant" element={<Assistant />} />
               <Route element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="about" element={<About />} />
@@ -90,7 +92,6 @@ export default function App() {
                 <Route path="forgot-password" element={<ForgotPassword />} />
                 <Route path="applications" element={<Applications />} />
                 <Route path="applications/:id" element={<ApplicationDetail />} />
-                <Route path="assistant" element={<Assistant />} />
                 <Route path="mentors" element={<Mentors />} />
                 <Route path="mentors/:id" element={<MentorDetail />} />
                 <Route path="become-mentor" element={<BecomeMentor />} />
