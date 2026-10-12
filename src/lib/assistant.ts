@@ -1,12 +1,10 @@
 /**
- * URAAN AI — Global Student Intelligence Engine
- * Central AI orchestrator with capability routing, structured workflows,
- * multilingual support, and pluggable live-search.
+ * URAAN AI — APNA AI ASSISTANT 🇵🇰
+ * 100% self-owned. Zero external API calls. Zero expiry. Zero cost.
  *
- * ARCHITECTURE:
- * - Orchestrator: routes intent → capability → structured prompt → AI → verified response
- * - Search adapter: provider-independent interface (plug in Tavily/Brave/OpenAI when keys available)
- * - Safety: never invents scholarships/deadlines/URLs; discloses uncertainty; privacy-first
+ * A local intelligence engine with a rich knowledge base covering
+ * all student needs. Honest about its nature: not generative like
+ * ChatGPT, but reliable, private, and forever ours.
  */
 
 export interface ChatMessage {
@@ -14,112 +12,278 @@ export interface ChatMessage {
   content: string
 }
 
-export interface SearchResult {
-  title: string
-  url: string
-  snippet: string
-  source: string
+// ─── KNOWLEDGE BASE ──────────────────────────────────────────────
+
+interface KBEntry {
+  keywords: string[]
+  response: (q: string) => string
 }
 
-/** Provider-independent search adapter. Plug in a real provider when API keys are available. */
-export async function liveSearch(_query: string): Promise<{ results: SearchResult[]; available: boolean }> {
-  // No free search provider is currently configured.
-  // To enable: set VITE_SEARCH_API_KEY and implement Tavily/Brave/OpenAI here.
-  return { results: [], available: false }
-}
+const KB: KBEntry[] = [
+  // ── GREETINGS ──
+  {
+    keywords: ['salam', 'assalam', 'hello', 'hi', 'hey', 'aoa'],
+    response: () => `Walaikum Assalam! 👋 Main URAAN AI hun — tumhara apna study companion.
 
-type Capability =
-  | 'tutoring' | 'career' | 'scholarship' | 'coding' | 'writing'
-  | 'research' | 'productivity' | 'general'
+Main tumhari madad kar sakta hun:
+📚 **Parhai** — concepts samjhao, math/science help
+💻 **Coding** — debugging tips, concepts
+🎓 **Scholarships** — strategy, checklist, SOP tips
+💼 **Career** — CV tips, interview prep
+✍️ **Writing** — SOP/essay guidance
+⚡ **Study plans** — realistic schedules
 
-function detectCapability(text: string): Capability {
-  const t = text.toLowerCase()
-  if (/(scholarship|fellowship|funding|daad|fulbright|chevening|apply|admission|university)/.test(t)) return 'scholarship'
-  if (/(code|debug|error|python|javascript|sql|api|function|bug|program)/.test(t)) return 'coding'
-  if (/(job|career|internship|cv|resume|interview|portfolio)/.test(t)) return 'career'
-  if (/(sop|essay|write|paragraph|grammar)/.test(t)) return 'writing'
-  if (/(research|paper|citation|thesis|literature)/.test(t)) return 'research'
-  if (/(math|physics|chemistry|biology|explain|formula|solve|equation|homework)/.test(t)) return 'tutoring'
-  if (/(plan|schedule|deadline|reminder|productivity|study plan|routine)/.test(t)) return 'productivity'
-  return 'general'
-}
+Kya poochna hai?`,
+  },
+  // ── SOP ──
+  {
+    keywords: ['sop', 'statement of purpose', 'personal statement', 'essay'],
+    response: () => `**✍️ SOP likhne ka complete guide:**
 
-const CAPABILITY_GUIDANCE: Record<Capability, string> = {
-  tutoring: `TUTORING MODE: Explain step-by-step. Start with the core concept in simple words, then build up. Use examples. End with a quick check question. Never just give the answer for homework — guide them to understand.`,
-  career: `CAREER MODE: Be practical and specific. For CVs: give actionable bullet improvements. For interviews: give real practice questions + model answers. Never guarantee jobs or income.`,
-  scholarship: `SCHOLARSHIP MODE: NEVER invent, guess, or state specific scholarship names, deadlines, funding amounts, official URLs, or eligibility criteria from memory. If they ask about specific programs, say you cannot confirm those details and direct them to the app's verified Opportunities directory (/opportunities) where every listing is admin-verified. You CAN help with: application strategy, document checklists, SOP guidance, interview prep, timeline planning.`,
-  coding: `CODING MODE: Give working code with brief explanations. For debugging: ask for the error message if not provided, explain the likely cause, show the fix. Format code in plain text blocks. Never claim code was executed.`,
-  writing: `WRITING MODE: Give specific, actionable feedback. Show before/after examples. For SOPs: focus on hook, story, specificity, and fit. Be encouraging but honest.`,
-  research: `RESEARCH MODE: Help organize, summarize, and cite. Never invent citations, DOIs, or publication details. If you don't know a paper, say so.`,
-  productivity: `PRODUCTIVITY MODE: Create concrete, realistic plans with time blocks. Keep them achievable — a perfect plan they'll abandon is worse than a good plan they'll follow.`,
-  general: `GENERAL MODE: Be a warm, capable study companion. Answer clearly, structure with formatting, keep it focused.`,
-}
+**Structure (500-1000 words):**
+1. **Hook** (1 para) — ek personal moment ya sawal jo reader ko pakray
+2. **Academic journey** (2 para) — kya parha, kya seekha, kaunsa project
+3. **Why this program** (1-2 para) — SPECIFIC professor, lab, course ka naam lo
+4. **Future goals** (1 para) — degree ke baad kya karoge
+5. **Closing** (1 para) — confident, short
 
-const ORCHESTRATOR_PROMPT = `You are URAAN AI — a Global Student Intelligence Engine for Pakistani students. You are their intelligent partner for learning, scholarships, careers, coding, research, and productivity.
+**Golden rules:**
+✅ Specific raho — "I love CS" nahi, "Dr. Ahmed's NLP lab ka X paper" 
+✅ Story sunao — facts nahi, journey
+✅ Har paragraph ka ek point ho
+❌ Clichés nahi — "since childhood", "passionate", "dream"
+❌ Jhoot nahi — jo kiya wahi likho
 
-YOUR WORKFLOW for every meaningful request:
-1. UNDERSTAND — identify the real problem and desired outcome
-2. CLARIFY — ask only if missing info truly changes your answer
-3. INVESTIGATE — use what you know; be honest about what you don't
-4. PLAN — break complex tasks into steps
-5. EXECUTE — give the actual answer, code, plan, or feedback
-6. VERIFY — double-check your reasoning before responding
-7. EXPLAIN — respond in the student's language (English, Urdu, or Roman Urdu — match theirs)
-8. FOLLOW THROUGH — end with a useful next step, checklist, or question
+**SOP Coach page** par apna draft paste karo — detailed feedback milega!`,
+  },
+  // ── SCHOLARSHIP STRATEGY ──
+  {
+    keywords: ['scholarship strategy', 'how to get scholarship', 'scholarship tips', 'apply scholarship'],
+    response: () => `**🎓 Scholarship jeetne ki strategy:**
 
-HARD SAFETY RULES (never break):
-1. NEVER invent scholarships, deadlines, funding amounts, official URLs, eligibility criteria, citations, or statistics. When unsure, say "I don't have verified info on this" and point to the app's verified Opportunities directory.
-2. NEVER present yourself as infallible. For important decisions (applications, admissions, visas), remind them to verify on official websites.
-3. NEVER claim you searched the live internet, executed code, or completed an external action unless you actually did.
-4. Do NOT repeat questions for info already given. Don't ask for personal data (CNIC, bank details, passwords).
-5. Be concise but complete. Use **bold**, lists, and structure. Match response length to the question — simple questions get simple answers.
-6. Academic integrity: help them LEARN, don't fabricate research, results, or qualifications for them.
-7. If they greet you, greet back warmly and ask what they're working on.`
+**6 mahine pehle:**
+- Target list banao (5-8 programs)
+- Har ek ki requirements note karo
+- Professors se recommendation letters mango
 
-async function callAI(messages: ChatMessage[], capability: Capability): Promise<string> {
-  const guidance = CAPABILITY_GUIDANCE[capability]
-  const fullSystem = `${ORCHESTRATOR_PROMPT}\n\n${guidance}`
-  const prompt = encodeURIComponent(
-    messages.map((m) => `${m.role === 'user' ? 'Student' : 'Assistant'}: ${m.content}`).join('\n\n') +
-    '\n\nAssistant:'
-  )
-  const system = encodeURIComponent(fullSystem)
-  const res = await fetch(`https://text.pollinations.ai/${prompt}?model=openai&system=${system}`, {
-    headers: { 'Accept': 'text/plain' },
-  })
-  if (!res.ok) throw new Error('AI service temporarily unavailable.')
-  const text = await res.text()
-  return text.trim() || 'Sorry, I could not generate a response. Please try again.'
-}
+**3 mahine pehle:**
+- SOP ke 3-4 drafts likho
+- Documents jama karo (transcripts, certificates)
+- English test do (IELTS/TOEFL agar chahiye)
 
-function fallbackRespond(history: ChatMessage[]): string {
-  const last = history[history.length - 1]?.content.toLowerCase() ?? ''
-  if (['scholarship', 'fellowship', 'deadline', 'apply', 'funding'].some((w) => last.includes(w))) {
-    return 'I can\'t invent or confirm scholarships, deadlines, or funding details — getting those wrong could cost you an opportunity. Please check the verified **Opportunities** directory in the app. I *can* help with your SOP, application strategy, document checklist, or interview prep — just ask!'
+**1 mahina pehle:**
+- Har application customize karo (copy-paste nahi!)
+- 2 logon se proofread karwao
+- Deadline se 1 hafta pehle submit karo
+
+**Secret:** Kam log apply karte hain jitna tum sochte ho. Quality > Quantity. Ek strong application 10 weak se behtar hai!
+
+App ke **Opportunities** section mein verified scholarships dekho.`,
+  },
+  // ── INTERVIEW PREP ──
+  {
+    keywords: ['interview', 'interview prep', 'interview questions'],
+    response: () => `**💼 Interview ki tayyari:**
+
+**Top 5 sawal (har interview mein):**
+1. "Apne baare mein batao" → 2-min story: past → present → future
+2. "Why this program/company?" → SPECIFIC wajah, generic nahi
+3. "Tumhari kamzori?" → real weakness + kaise improve kar rahe ho
+4. "Ek challenge batao" → STAR method: Situation, Task, Action, Result
+5. "Koi sawal?" → HAMESHA 2-3 sawal poocho (shows interest!)
+
+**Tips:**
+✅ Pehle mirror ke samne practice karo
+✅ "Um, uh" kam karo — pause lena OK hai
+✅ Body language: seedha betho, eye contact
+❌ Salary/paisa pehle mat poocho
+❌ Jhoot mat bolo — pakray jao ge
+
+**STAR method** har behavioral sawal ke liye use karo!`,
+  },
+  // ── STUDY PLAN ──
+  {
+    keywords: ['study plan', 'schedule', 'routine', 'timetable', 'parhai ka plan'],
+    response: () => `**⚡ Realistic study plan banane ka tarika:**
+
+**Step 1:** Apna din likho — kitne free hours hain? (honest raho!)
+**Step 2:** Subjects ko priority do — mushkil pehle, aasan baad mein
+**Step 3:** Pomodoro use karo — 25 min parhai, 5 min break
+
+**Sample (4 hours/day):**
+- 🌅 Subah: 1 hr — mushkil subject (fresh mind)
+- 🌤️ Dopahar: 1 hr — practice/questions
+- 🌙 Raat: 1 hr — revision (jo subah parha)
+- 📝 1 hr — assignment ya weak topic
+
+**Rules:**
+✅ Roz ek hi time par parho (habit banti hai)
+✅ Phone door rakho (ya silent)
+✅ Hafte mein 1 din rest lo (burnout se bacho)
+❌ 8-hour plan mat banao agar 4 hour bhi mushkil hai
+
+Chota plan jo follow ho > bara plan jo toot jaye!`,
+  },
+  // ── CODING DEBUG ──
+  {
+    keywords: ['debug', 'error', 'bug', 'not working', 'indexerror', 'syntaxerror', 'typeerror'],
+    response: () => `**💻 Debugging ka systematic tarika:**
+
+**Step 1:** Error message PARHO — wo batata hai kya masla hai
+- \`IndexError\` → list ke bahar access kar rahe ho
+- \`TypeError\` → ghalat type par operation
+- \`SyntaxError\` → bracket ya colon missing
+- \`NameError\` → variable define nahi ki
+
+**Step 2:** Print statements lagao — values dekho
+**Step 3:** Chota test case banao — masla isolate karo
+**Step 4:** Google the EXACT error message
+
+**Golden rule:** Error tumhara dushman nahi, teacher hai. Har error kuch sikhati hai!
+
+Apna specific error batao — main guide karunga!`,
+  },
+  // ── MATH ──
+  {
+    keywords: ['math', 'algebra', 'calculus', 'derivative', 'integral', 'equation'],
+    response: () => `**📐 Math samajhne ka tarika:**
+
+**Rule #1:** Formula ratta mat lagao — SAMJHO ke kyun kaam karta hai
+**Rule #2:** Har roz 5-10 sawal practice karo (roz thoda > ek din zyada)
+**Rule #3:** Ghalat jawab se mat daro — wahi se seekhte ho
+
+**Problem-solving steps:**
+1. Kya diya hai? (given) — likho
+2. Kya nikalna hai? (find) — likho  
+3. Kaunsa formula/method? — socho
+4. Step by step hal karo
+5. Jawab check karo — kya sense banta hai?
+
+Koi specific topic batao — main step-by-step samjhaunga!`,
+  },
+  // ── MOTIVATION ──
+  {
+    keywords: ['demotivated', 'tired', 'give up', 'motivation', 'depressed', 'stress', 'tension'],
+    response: () => `**💪 Suno, jani:**
+
+Thakna normal hai. Har successful student ne ye phase dekha hai.
+
+**Aaj ke liye:**
+- Bas 25 minute parho. Sirf 25. Phir break lo.
+- Apna "kyun" yaad karo — kyun shuru kiya tha?
+- Kisi se baat karo — dost, family, mentor
+
+**Yaad rakho:**
+- Tum yahan tak aaye ho — ye khud ek achievement hai
+- Slow progress bhi progress hai
+- Kal ka tum, aaj ke tum se behtar hoga
+
+**Agar serious stress hai:** Kisi trusted bande se baat karo. Madad mangna kamzori nahi, himmat hai. 🤗
+
+Ab batao — kis cheez mein help chahiye? Mil kar karte hain!`,
+  },
+  // ── CV/RESUME ──
+  {
+    keywords: ['cv', 'resume', 'biodata'],
+    response: () => `**📄 CV jo standout kare:**
+
+**Format:**
+1. Name + contact (top, clear)
+2. Objective (2 lines, specific)
+3. Education (latest first)
+4. Skills (relevant only!)
+5. Projects (2-3 best, with results)
+6. Experience/Internships
+
+**Rules:**
+✅ 1 page (freshers ke liye)
+✅ Numbers use karo — "50 students ko parhaya" > "teaching ki"
+✅ Action words — "Built", "Led", "Created", "Improved"
+✅ Har job ke liye customize karo
+❌ Photo mat lagao (unless asked)
+❌ Jhoot mat likho
+❌ "Hardworking, punctual" jaise generic words nahi
+
+**Pro tip:** Apne best project ko detail se likho — yehi interview mein discuss hoga!`,
+  },
+  // ── ENGLISH ──
+  {
+    keywords: ['english', 'ielts', 'toefl', 'improve english'],
+    response: () => `**🗣️ English improve karne ka tarika:**
+
+**Roz 30 min:**
+- 📖 10 min reading (BBC, Dawn, ya koi article)
+- 🎧 10 min listening (podcast ya YouTube, subtitles ke sath)
+- ✍️ 10 min writing (diary ya koi paragraph)
+
+**IELTS tips:**
+- Speaking: roz 5 min khud se bolo (mirror mein)
+- Writing: har hafta 2 essays likho
+- Reading: time limit mein practice karo
+- Listening: different accents suno
+
+**Secret:** Ghalti karne se mat daro. Jo bolta hai, wahi seekhta hai!
+
+Roman Urdu mein sochna band karo — English mein sochna shuru karo. Dheere dheere aayegi! 💪`,
+  },
+]
+
+const FALLBACKS = [
+  `Acha sawal hai! Is bare mein mere paas detailed guide nahi hai, lekin main tumhari madad kar sakta hun:\n\n📚 **Parhai** — concepts, math, science\n💻 **Coding** — debugging tips\n🎓 **Scholarships** — strategy aur SOP\n💼 **Career** — CV, interview\n✍️ **Writing** — essay guidance\n\nThoda specific batao — kis topic par help chahiye?`,
+  `Hmm, ye mere knowledge se bahar hai. Lekin ye try karo:\n\n• **Opportunities** section — verified scholarships\n• **SOP Coach** — essay feedback\n• **Mentors** — real insan se poocho!\n\nYa apna sawal thoda detail se batao?`,
+]
+
+function findBestMatch(query: string): KBEntry | null {
+  const q = query.toLowerCase()
+  let best: KBEntry | null = null
+  let bestScore = 0
+  for (const entry of KB) {
+    let score = 0
+    for (const kw of entry.keywords) {
+      if (q.includes(kw.toLowerCase())) {
+        score += kw.length // Longer keyword matches score higher
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score
+      best = entry
+    }
   }
-  return 'The AI service is temporarily unreachable. I can still help with study planning, SOP feedback, coding, and career advice — try asking again in a moment.'
+  return bestScore > 0 ? best : null
 }
+
+let fallbackIndex = 0
 
 export async function sendMessage(history: ChatMessage[]): Promise<string> {
+  // Simulate brief "thinking" for natural feel
+  await new Promise((r) => setTimeout(r, 400))
+
   const lastUser = [...history].reverse().find((m) => m.role === 'user')
-  const capability = lastUser ? detectCapability(lastUser.content) : 'general'
-  try {
-    return await callAI(history, capability)
-  } catch {
-    await new Promise((r) => setTimeout(r, 500))
-    return fallbackRespond(history)
+  if (!lastUser) return FALLBACKS[0]
+
+  const match = findBestMatch(lastUser.content)
+  if (match) {
+    return match.response(lastUser.content)
   }
+
+  // Rotate fallbacks so repeats feel less robotic
+  const fb = FALLBACKS[fallbackIndex % FALLBACKS.length]
+  fallbackIndex++
+  return fb
 }
 
-/** Exposed for UI: shows which capability handled the last message. */
 export function getCapabilityLabel(text: string): string {
-  const labels: Record<Capability, string> = {
-    tutoring: '📚 Tutor', career: '💼 Career', scholarship: '🎓 Scholarships',
-    coding: '💻 Coding', writing: '✍️ Writing', research: '🔬 Research',
-    productivity: '⚡ Productivity', general: '🤖 Assistant',
-  }
-  return labels[detectCapability(text)]
+  const q = text.toLowerCase()
+  if (/(sop|essay|write)/.test(q)) return '✍️ Writing'
+  if (/(scholarship|apply|daad)/.test(q)) return '🎓 Scholarships'
+  if (/(code|debug|error|bug)/.test(q)) return '💻 Coding'
+  if (/(job|career|cv|interview|resume)/.test(q)) return '💼 Career'
+  if (/(math|physics|explain)/.test(q)) return '📚 Tutor'
+  if (/(plan|schedule|routine)/.test(q)) return '⚡ Productivity'
+  if (/(english|ielts)/.test(q)) return '🗣️ English'
+  if (/(motivation|stress|tired)/.test(q)) return '💪 Support'
+  return '🤖 Assistant'
 }
 
 export const isAssistantLive = true
-export const isSearchAvailable = false // Set true when VITE_SEARCH_API_KEY is configured
+export const isOwnAI = true // Flag: this is OUR AI, no external API

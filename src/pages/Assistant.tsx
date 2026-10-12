@@ -73,7 +73,7 @@ export function Assistant() {
       />
 
       <div className="mb-6 flex items-center gap-2 flex-wrap">
-        <Badge tone="verified">● Live AI</Badge>
+        <Badge tone="verified">● Apna AI 🇵🇰</Badge>
         {messages.length > 1 && (
           <Badge tone="info">{getCapabilityLabel(messages[messages.length - 2]?.content ?? '')}</Badge>
         )}
@@ -136,10 +136,10 @@ export function Assistant() {
       </Card>
 
       <p className="text-xs text-muted mt-4 text-center">
-        AI can be wrong — verify important details. It will never invent scholarships, deadlines, or official links.
+        🇵🇰 100% apna AI — koi external API nahi, kabhi expire nahi hoga. Tumhara data kahin nahi jata.
       </p>
       <p className="text-[11px] text-muted mt-2 text-center max-w-xl mx-auto">
-        🔒 Privacy: your messages are sent to an AI service to generate responses. Don't share sensitive personal information like CNIC numbers, passwords, or bank details.
+        Note: Ye smart knowledge-based assistant hai (ChatGPT jaisa generative nahi). Sensitive info phir bhi share mat karo.
       </p>
     </div>
   )

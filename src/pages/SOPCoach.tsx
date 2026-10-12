@@ -5,16 +5,6 @@ import { Card } from '../components/ui/Card'
 import { TextArea, TextInput } from '../components/ui/fields'
 import { SectionHeading } from '../components/ui/states'
 
-const SOP_SYSTEM = `You are an expert SOP (Statement of Purpose) coach for Pakistani students applying to international scholarships. Review the student's SOP draft and program name. Give structured feedback:
-
-1. **Overall score** (1-10) with one-line verdict
-2. **Strengths** (2-3 specific things done well)
-3. **Weaknesses** (2-3 specific issues — be honest but kind)
-4. **Line-by-line suggestions** for the weakest paragraph
-5. **Rewritten hook** — show a stronger opening paragraph as an example
-
-Rules: Never invent facts about the student. Be specific, not generic. Keep it under 400 words. Be encouraging — these students are brave for applying.`
-
 export function SOPCoach() {
   const [program, setProgram] = useState('')
   const [draft, setDraft] = useState('')
@@ -30,17 +20,64 @@ export function SOPCoach() {
     setLoading(true)
     setError(null)
     setFeedback('')
-    try {
-      const prompt = encodeURIComponent(
-        `Program: ${program || 'Not specified'}\n\nSOP Draft:\n${draft}\n\nPlease review my SOP.`
-      )
-      const res = await fetch(`https://text.pollinations.ai/${prompt}?model=openai&system=${encodeURIComponent(SOP_SYSTEM)}`)
-      if (!res.ok) throw new Error('AI service unavailable.')
-      setFeedback(await res.text())
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Analysis failed.')
-    }
+    // Local analysis — no external API, 100% ours
+    await new Promise((r) => setTimeout(r, 800))
+    setFeedback(analyzeSOP(draft, program))
     setLoading(false)
+  }
+
+  /** Local SOP analysis engine — rule-based, honest, no invented facts. */
+  function analyzeSOP(text: string, prog: string): string {
+    const words = text.trim().split(/\s+/).length
+    const paras = text.trim().split(/\n\n+/).length
+    const issues: string[] = []
+    const strengths: string[] = []
+
+    // Checks
+    if (words < 300) issues.push(`Too short (${words} words) — aim for 500-800 words for most programs.`)
+    if (words > 1200) issues.push(`Too long (${words} words) — trim to under 1000. Admissions officers skim.`)
+    if (paras < 3) issues.push('Needs more structure — break into clear paragraphs (aim for 4-6).')
+
+    const cliches = ['since childhood', 'passionate', 'dream come true', 'ever since I was']
+    const foundCliches = cliches.filter((c) => text.toLowerCase().includes(c))
+    if (foundCliches.length > 0) issues.push(`Avoid clichés: "${foundCliches.join('", "')}" — replace with specific stories.`)
+
+    if (!/\b(professor|dr\.|lab|course|research)\b/i.test(text)) {
+      issues.push('No specific program details — name a professor, lab, or course to show genuine fit.')
+    } else {
+      strengths.push('Mentions specific program details — great for showing fit!')
+    }
+
+    const firstPara = text.trim().split(/\n\n+/)[0] ?? ''
+    if (firstPara.length < 100) {
+      issues.push('Weak opening — start with a specific moment or question, not a generic statement.')
+    } else {
+      strengths.push('Good opening length — hooks the reader.')
+    }
+
+    if (/\b(I built|I created|I led|I developed|my project)\b/i.test(text)) {
+      strengths.push('Uses active voice with concrete achievements — keep this up!')
+    } else {
+      issues.push('Add concrete achievements — "I built X" beats "I am interested in X".')
+    }
+
+    // Score
+    const score = Math.max(3, Math.min(9, 7 - issues.length + strengths.length))
+
+    let out = `**Overall Score: ${score}/10**\n`
+    out += score >= 7 ? 'Solid draft with clear potential! A few fixes will make it strong.\n' : 'Good start — needs focused revision in the areas below.\n'
+    if (prog) out += `\n**Target:** ${prog}\n`
+    out += `\n**📊 Stats:** ${words} words, ${paras} paragraphs\n`
+
+    out += `\n**✅ Strengths:**\n`
+    out += strengths.length > 0 ? strengths.map((s) => `• ${s}`).join('\n') : '• You started writing — that\'s the hardest part!'
+
+    out += `\n\n**🔧 Fix these:**\n`
+    out += issues.length > 0 ? issues.map((s, i) => `${i + 1}. ${s}`).join('\n') : '• Nothing major — polish and proofread!'
+
+    out += `\n\n**💡 Next steps:**\n1. Fix the issues above one by one\n2. Read it aloud — awkward parts will jump out\n3. Ask 2 people to proofread\n4. Customize for EACH program (never send the same SOP twice!)`
+
+    return out
   }
 
   function renderRich(text: string) {
