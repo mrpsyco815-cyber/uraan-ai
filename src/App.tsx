@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { Layout } from './components/Layout'
 import { AuthProvider } from './context/AuthContext'
@@ -59,7 +59,7 @@ export default function App() {
       <AuthProvider>
         <LanguageProvider>
           <ProfileProvider>
-          <BrowserRouter>
+          <HashRouter>
             <Routes>
               <Route element={<Layout />}>
                 <Route index element={<Home />} />
@@ -111,7 +111,7 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
-          </BrowserRouter>
+          </HashRouter>
         </ProfileProvider>
       </LanguageProvider>
       </AuthProvider>
