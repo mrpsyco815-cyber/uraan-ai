@@ -11,6 +11,7 @@ import { Applications } from './pages/Applications'
 import { Assistant } from './pages/Assistant'
 import { BecomeMentor } from './pages/BecomeMentor'
 import { Contact } from './pages/Contact'
+import { CVBuilder } from './pages/apps/CVBuilder'
 import { Dashboard } from './pages/Dashboard'
 import { DeleteAccount } from './pages/DeleteAccount'
 import { Faq } from './pages/Faq'
@@ -24,6 +25,7 @@ import { Mentors } from './pages/Mentors'
 import { MyMentorship } from './pages/MyMentorship'
 import { Notifications } from './pages/Notifications'
 import { NotificationSettings } from './pages/NotificationSettings'
+import { NotesStudio } from './pages/apps/NotesStudio'
 import { Privacy, Terms } from './pages/Legal'
 import { NotFound } from './pages/NotFound'
 import { Onboarding } from './pages/Onboarding'
@@ -55,6 +57,8 @@ export default function App() {
                 <Route path="opportunities" element={<Opportunities />} />
                 <Route path="opportunities/:id" element={<OpportunityDetail />} />
                 <Route path="resources" element={<Resources />} />
+                <Route path="apps/cv-builder" element={<CVBuilder />} />
+                <Route path="apps/notes" element={<NotesStudio />} />
                 <Route path="faq" element={<Faq />} />
                 <Route path="contact" element={<Contact />} />
                 <Route path="privacy" element={<Privacy />} />

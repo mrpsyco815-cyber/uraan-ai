@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Badge } from '../components/ui/Badge'
+import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Select, TextInput } from '../components/ui/fields'
 import { EmptyState, SectionHeading, Spinner } from '../components/ui/states'
+import { MINI_APPS } from '../lib/apps'
 import { fetchResources, type Resource } from '../lib/resources'
 
 const typeTone: Record<string, 'info' | 'verified' | 'pending' | 'neutral'> = {
@@ -40,8 +43,33 @@ export function Resources() {
       <SectionHeading
         kicker="Library"
         title="Learning resources"
-        subtitle={live ? 'Curated guides, templates, and videos.' : 'Free guides and learning paths.'}
+        subtitle={live ? 'Mini-apps, guides, templates, and videos.' : 'Mini-apps and free guides.'}
       />
+
+      {/* MINI APPS */}
+      <h2 className="font-bold text-ink text-lg mb-4">🚀 Mini Apps</h2>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+        {MINI_APPS.map((app) => (
+          <Card key={app.id} className="p-5 hover:shadow-lg transition">
+            <div className="flex items-start justify-between mb-2">
+              <span className="text-3xl">{app.icon}</span>
+              <Badge tone={app.status === 'live' ? 'verified' : 'pending'}>
+                {app.status === 'live' ? 'Live' : 'Soon'}
+              </Badge>
+            </div>
+            <h3 className="font-bold text-ink">{app.name}</h3>
+            <p className="text-sm text-primary-teal font-medium">{app.tagline}</p>
+            <p className="text-sm text-muted mt-2 mb-4">{app.description}</p>
+            {app.status === 'live' ? (
+              <Link to={app.route}><Button size="sm">Open →</Button></Link>
+            ) : (
+              <Button size="sm" variant="ghost" disabled>Coming soon</Button>
+            )}
+          </Card>
+        ))}
+      </div>
+
+      <h2 className="font-bold text-ink text-lg mb-4">📚 Guides & Templates</h2>
 
       <Card className="p-5 mb-8 flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
